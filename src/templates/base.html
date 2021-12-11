@@ -11,14 +11,14 @@
 
 <body class="flex flex-col justify-between h-full">
     <header class="text-3xl font-bold text-slate-50 bg-slate-800 py-2 pl-5">garbage-detect</header>
-    <div class="h-9 text-center">graph goes here</div>
+    <div class="h-9 text-center">
+        {% block stats %}
+        Select a garbage bin to view data
+        {% endblock %}
+    </div>
     <div class="bg-slate-100 grid grid-cols-6 h-80">
         <div class="flex "></div>
     </div>
-
-    <script>
-        let binData = '{{ bin_data }}';
-    </script>
 </body>
 
 </html>
