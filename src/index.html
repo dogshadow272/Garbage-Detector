@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 
 <head>
     <meta charset="UTF-8">
@@ -9,8 +9,16 @@
     <title>Garbage Detect</title>
 </head>
 
-<body>
-    <h1 class="text-3xl font-bold"> Hello world! </h1>
+<body class="flex flex-col justify-between h-full">
+    <header class="text-3xl font-bold text-slate-50 bg-slate-800 py-2 pl-5">garbage-detect</header>
+    <div class="h-9 text-center">graph goes here</div>
+    <div class="bg-slate-100 grid grid-cols-6 h-80">
+        <div class="flex "></div>
+    </div>
+
+    <script>
+        let binData = '{{ bin_data }}';
+    </script>
 </body>
 
 </html>
