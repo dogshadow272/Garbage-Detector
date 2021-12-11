@@ -1,0 +1,3 @@
+# Garbage Detect
+
+Detect garbage.
