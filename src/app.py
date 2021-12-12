@@ -30,7 +30,7 @@ def garbage_stats(id):
         [0, 2, 5, 8, 8, 1, 1]
     )
 
-    return render_template('garbage-stats.html', bins=dummy_bins, litter_data=litter_data)
+    return render_template('garbage-stats.html', bins=dummy_bins, target=id, litter_data=litter_data)
 
 
 if __name__ == "__main__":

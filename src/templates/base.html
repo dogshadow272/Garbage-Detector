@@ -22,10 +22,11 @@
     </div>
 
     <div class="bg-slate-100 overflow-x-scroll h-fit px-9 py-10">
-        <div class="flex gap-6">
+        <div class="flex gap-6 items-center">
             {% for bin in bins %}
             <a class="bg-white hover:bg-slate-50 hover:shadow shadow-md duration-200
-             rounded-xl overflow-hidden w-fit min-w-[16rem] h-fit" href="/{{bin.id}}">
+             rounded-xl overflow-hidden w-fit min-w-[16rem] h-fit 
+             {% if target == bin.id %} border-4 border-slate-700 {% endif %}" href="/{{bin.id}}">
                 <img class="w-64 h-44 object-cover" src="{{ url_for('static', filename=bin.img_path) }}"
                     alt="Garbage bin">
                 <figcaption class="text-lg px-4 py-2">
