@@ -21,7 +21,7 @@
         {% endblock %}
     </div>
 
-    <div class="bg-slate-100 overflow-x-scroll h-fit px-9 py-10">
+    <div class="bg-slate-100 overflow-x-scroll h-fit px-9 py-10" id="binNav">
         <div class="flex gap-6 items-center">
             {% for bin in bins %}
             <a class="bg-white hover:bg-slate-50 hover:shadow shadow-md duration-200
@@ -38,5 +38,19 @@
         </div>
     </div>
 </body>
+
+<script>
+    const binNav = document.getElementById('binNav');
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+        let scrollpos = localStorage.getItem('scrollpos');
+        if (scrollpos) binNav.scrollTo(scrollpos, 0);
+    });
+
+    window.onbeforeunload = (_) => {
+        localStorage.setItem('scrollpos', binNav.scrollLeft);
+    };
+</script>
+
 
 </html>
