@@ -23,18 +23,14 @@ def index():
 @app.route('/<int:id>')
 def garbage_stats(id):
     # Placeholder for SQLite stuff
-    bin_data = [
-        # (time, litter_count)
-        (0.,    0),
-        (600.,  2),
-        (1200., 5),
-        (1800., 8),
-        (2400., 8),
-        (3000., 12),
-        (3600., 1)
-    ]
+    # (time_stamps, litter_counts)
+    litter_data = (
+        [0, 1000000000, 2000000000, 3000000000,
+            4000000000, 5000000000, 6000000000],
+        [0, 2, 5, 8, 8, 1, 1]
+    )
 
-    return render_template('garbage-stats.html', bins=dummy_bins, target_bin=bin_data)
+    return render_template('garbage-stats.html', bins=dummy_bins, litter_data=litter_data)
 
 
 if __name__ == "__main__":

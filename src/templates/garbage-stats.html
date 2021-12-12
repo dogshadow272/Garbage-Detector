@@ -3,44 +3,31 @@
 {% block stats %}
 <canvas id="chart"></canvas>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js"
-    integrity="sha512-tMabqarPtykgDtdtSqCL3uLVM0gS1ZkUAVhRFu1vSEFgvB73niFQWJuvviDyBGBH22Lcau4rHB5p2K2T0Xvr6Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer">
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
     const ctx = document.getElementById('chart').getContext("2d");
+    const labels = {{ litter_data[0] }};
+    const data = {{ litter_data[1] }};
 
-    const today = new Date().getDay();
-    let labels = ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'];
-    labels = labels.slice(today, 7).concat(labels.slice(0, today));
 
     new Chart(ctx, {
         type: 'line',
         data: {
             labels,
             datasets: [{
-                label: "Data",
-                borderColor: "#80b6f4",
-                pointBorderColor: "#80b6f4",
-                pointBackgroundColor: "#80b6f4",
-                pointHoverBackgroundColor: "#80b6f4",
-                pointHoverBorderColor: "#80b6f4",
-                pointBorderWidth: 10,
-                pointHoverRadius: 10,
-                pointHoverBorderWidth: 1,
-                pointRadius: 3,
-                fill: false,
-                borderWidth: 4,
-                data: [100, 120, 150, 170, 180, 170, 160]
+                label: "Garbage items detected",
+                data
             }]
         },
         options: {
             maintainAspectRatio: false,
             scales: {
                 x: {
-                    ticks: {
-                        autoSkip: true,
-                        maxTicksLimit: 7
+                    type: 'time',
+                    time: {
+                        unit: 'day'
                     }
                 }
             }
