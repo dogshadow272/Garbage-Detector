@@ -45,5 +45,5 @@ def garbage_stats(id):
     return render_template('garbage-stats.html', bins=dummy_bins, target=id, litter_data=litter_data)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)

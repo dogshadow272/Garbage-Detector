@@ -11,7 +11,7 @@ def photo_capture():
         ret, frame = cam.read()
 
         if not ret:
-            print("failed to grab frame")
+            print('failed to grab frame')
             break
 
         # Save photo in the directory
