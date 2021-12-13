@@ -9,33 +9,29 @@
     <title>Garbage Detect</title>
 </head>
 
-<body class="flex flex-col justify-between h-full">
-    <header class="flex gap-5 items-end bg-slate-800 py-2 pl-5">
-        <a href="/" class="text-3xl font-bold text-slate-50">garbage-detect</a>
-        <span class="text-lg font-normal text-slate-400">litter detection + monitoring + notification system</span>
-    </header>
+<body class="h-full flex">
+    <nav id="binNav" class="flex flex-col items-stretch gap-3 overflow-y-scroll bg-slate-100 py-2 px-8 h-screen">
+        <a href="/" class="text-2xl font-extrabold text-slate-800 w-full text-center my-4">garbage-detect</a>
+        {% for bin in bins %}
+        <a class="{% if target == bin.id %} bg-slate-700 text-slate-100 {% else %} hover:bg-slate-200 
+            {% endif %} rounded-xl leading-5 duration-200 flex items-center overflow-hidden min-h-[4rem]"
+            href="/{{bin.id}}">
+            <!-- <img class="w-64 h-44 object-cover" src="{{ url_for('static', filename=bin.img_path) }}" alt="Garbage bin"> -->
+            <span class="{% if target == bin.id %} bg-slate-800 text-slate-100 
+            {% else %} bg-slate-300 text-slate-400 {% endif %} text-xl font-bold
+            px-4 h-[calc(100%-1rem)] flex items-center rounded-lg ml-2">5</span>
+            <div class="px-5 py-3">
+                <div class="font-bold">{{ bin.address }}</div>
+                <div class="font-light">{{ bin.location }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </nav>
 
-    <div class="h-80 mx-28 text-center align-middle leading-[20rem]">
+    <div class="p-8 text-center align-middle leading-[100%] h-full w-auto">
         {% block stats %}
         Select a garbage bin to view data
         {% endblock %}
-    </div>
-
-    <div class="bg-slate-100 overflow-x-scroll h-fit px-9 py-10" id="binNav">
-        <div class="flex gap-6 items-center">
-            {% for bin in bins %}
-            <a class="bg-white hover:bg-slate-50 hover:shadow shadow-md duration-200
-             rounded-xl overflow-hidden w-fit min-w-[16rem] h-fit 
-             {% if target == bin.id %} border-4 border-slate-700 {% endif %}" href="/{{bin.id}}">
-                <img class="w-64 h-44 object-cover" src="{{ url_for('static', filename=bin.img_path) }}"
-                    alt="Garbage bin">
-                <figcaption class="text-lg px-4 py-2">
-                    <div class="font-bold">{{ bin.address }}</div>
-                    <div class="font-light">{{ bin.location }}</div>
-                </figcaption>
-            </a>
-            {% endfor %}
-        </div>
     </div>
 </body>
 
