@@ -2,8 +2,28 @@
 
 Garbage Detect is a litter detection, monitoring, and notification system.
 
-## Running
+## Usage
 
-Install dependencies: `pip install -r requirements.txt`
+Installing dependencies:
 
-Run: `python3 src/app.py`
+```
+pip install -r requirements.txt
+```
+
+Running:
+
+```
+python3 src/app.py
+```
+
+Developing front-end:
+
+```
+npx tailwindcss -i src/static/styles.css -o src/static/generated-styles.css -mw
+```
+
+Of course, you'd have to have TailwindCSS installed for that:
+
+```
+npm install -D tailwindcss
+```
