@@ -1,17 +1,30 @@
 from flask import Flask, render_template
+import sqlite3
+import time
+
+
+def get_columns(table):
+    '''Get columns of table (str) and return a list'''
+    return [i[1] for i in cur.execute(f'PRAGMA table_info({table})').fetchall()]
+
+def get_property(id, property):
+    '''Get property (str) of bin with id (int) and return a string'''
+    return cur.execute(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
+
+def new_entry(data):
+    '''Inserts data (list) into SQL database db.db'''
+    cur.execute(f'INSERT INTO data VALUES ({time.time()}, {", ".join(map(str, data))})')
 
 
 app = Flask(__name__)
+con = sqlite3.connect('db.db', check_same_thread=False)
+cur = con.cursor()
 
-# Placeholder for database stuff
 dummy_bins = [
     {
-        'id': i,
-        'img_path': 'bins/0.jpg',
-        'address': '209 Bishan Street 23',
-        'location': 'Staircase 5A'
+        j: get_property(i, j) for j in get_columns('info')
     }
-    for i in range(10)
+    for i in range(1, len(cur.execute('SELECT id FROM info').fetchall()) + 1)
 ]
 
 
@@ -22,13 +35,12 @@ def index():
 
 @app.route('/<int:id>')
 def garbage_stats(id):
-    # Placeholder for SQLite stuff
-    # (time_stamps, litter_counts)
-    litter_data = (
-        [0, 1000000000, 2000000000, 3000000000,
-            4000000000, 5000000000, 6000000000],
-        [0, 2, 5, 8, 8, 1, 1]
-    )
+    time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
+    litter_counts = [i[0] for i in cur.execute(f'SELECT bin{id} FROM data')]
+    litter_data = (time_stamps, litter_counts)
+
+    print(dummy_bins)
+    print(litter_data)
 
     return render_template('garbage-stats.html', bins=dummy_bins, target=id, litter_data=litter_data)
 
