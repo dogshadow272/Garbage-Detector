@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-
+from math import sin  # For dummy data
 
 app = Flask(__name__)
 
@@ -24,13 +24,12 @@ def index():
 def garbage_stats(id):
     # Placeholder for SQLite stuff
     # (time_stamps, litter_counts)
-    litter_data = (
-        [0, 1000000000, 2000000000, 3000000000,
-            4000000000, 5000000000, 6000000000],
-        [0, 2, 5, 8, 8, 1, 1]
+    dummy_data = (
+        [t * 600000 for t in range(672)],
+        [int(8 * sin(.01 * x) + sin(.1 * x) + 9) for x in range(672)]
     )
 
-    return render_template('garbage-stats.html', bins=dummy_bins, target=id, litter_data=litter_data)
+    return render_template('garbage-stats.html', bins=dummy_bins, target=id, litter_data=dummy_data)
 
 
 if __name__ == "__main__":
