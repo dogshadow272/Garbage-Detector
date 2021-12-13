@@ -3,20 +3,21 @@ import sqlite3
 import time
 
 
-def get_columns(table):
-    '''Get columns of table (str) and return a list'''
+def get_columns(table: str) -> list:
+    '''Return a list of the columns in `table`.'''
     return [i[1] for i in cur.execute(f'PRAGMA table_info({table})').fetchall()]
 
 
-def get_property(id, property):
-    '''Get property (str) of bin with id (int) and return a string'''
+def get_property(id: int, property: str):
+    '''Return the value of `property` on the bin with whose id is `id`.'''
     return cur.execute(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
 
 
-def new_entry(data):
-    '''Inserts data (list) into SQL database db.db'''
+def new_entry(data: list):
+    '''Insert data into SQL database.'''
     cur.execute(
-        f'INSERT INTO data VALUES ({time.time()}, {", ".join(map(str, data))})')
+        f'INSERT INTO data VALUES ({time.time()}, {", ".join(map(str, data))})'
+    )
 
 
 app = Flask(__name__)
