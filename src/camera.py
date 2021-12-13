@@ -19,12 +19,13 @@ def photo_capture():
             break
         
         while True:
-            sleep(60 - time() % 60)             
             # SPACE pressed
             img_name = "opencv_frame_{}.png".format(img_counter) #saves photo in the directory
             cv2.imwrite(img_name, frame)
             print("{} written!".format(img_name))
             img_counter += 1
+
+            sleep(60 - time() % 60)
     
     cam.release()
     
