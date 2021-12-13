@@ -20,7 +20,7 @@ def new_entry(data):
 
 
 app = Flask(__name__)
-con = sqlite3.connect('db.db', check_same_thread=False)
+con = sqlite3.connect('src/db.db', check_same_thread=False)
 cur = con.cursor()
 
 dummy_bins = [
@@ -46,4 +46,4 @@ def garbage_stats(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
