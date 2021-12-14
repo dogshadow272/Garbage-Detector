@@ -3,6 +3,11 @@ import sqlite3
 import time
 
 
+def delete_bin(id):
+    cur.execute(f'ALTER TABLE data DROP bin{id}')
+    cur.execute(f'DELETE FROM info WHERE id={id}')
+
+
 def get_columns(table: str) -> list:
     '''Return a list of the columns in `table`.'''
     return [i[1] for i in cur.execute(f'PRAGMA table_info({table})').fetchall()]
@@ -11,6 +16,24 @@ def get_columns(table: str) -> list:
 def get_property(id: int, property: str):
     '''Return the value of `property` on the bin with whose id is `id`.'''
     return cur.execute(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
+
+
+def new_bin(id, img_path='bins/0.jpg', address='209 Bishan Street 23', location='Staircase 5A'):
+    '''
+    Parameters
+    ----------
+    id : str
+    img_path : str
+    address : str
+    location : str
+
+    Returns
+    -------
+    void
+        Adds new bin to database
+    '''
+    cur.execute('ALTER TABLE data ADD bin7 DEFAULT 0')
+    cur.execute(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}")')
 
 
 def new_entry(data: list):
