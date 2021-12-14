@@ -1,47 +1,28 @@
 {% extends 'base.html' %}
 
 {% block stats %}
-<canvas id="chart"></canvas>
+<h1 class="text-3xl font-bold">209 Bishan Street 23</h1>
+<h2 class="text-xl font-semibold">Staircase 5A</h2>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
-<script
-    src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<div class="flex gap-4 w-auto my-4 mx-auto">
+    <div id="graph" class="flex justify-center items-center"></div>
+    <div class="flex flex-col items-stretch gap-4 min-w-max">
+        <div class="bg-slate-100 shadow rounded-xl py-4 px-6">
+            showing last week
+        </div>
+        <div class="bg-slate-100 shadow rounded-xl py-4 px-6 font-mono font-semibold text-xl uppercase">
+            Max&nbsp;&nbsp;= 9<br>
+            Mean&nbsp;= 4<br>
+            Min&nbsp;&nbsp;= 2
+        </div>
+    </div>
+</div>
+
 <script>
-    const ctx = document.getElementById('chart').getContext("2d");
-    let gradientStroke = ctx.createLinearGradient(0, 500, 0, 0);
-    gradientStroke.addColorStop(0, '#c8a0f0');
-    gradientStroke.addColorStop(1, '#e7d2fa');
-
-    // Double braces is Jinja syntax - ignore the linter errors
-    const labels = {{ litter_data[0] }};
-    const data = {{ litter_data[1] }};
-
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                label: "Garbage items detected",
-                data,
-                borderColor: gradientStroke,
-                pointRadius: 0,
-                fill: true,
-                backgroundColor: gradientStroke,
-                borderWidth: 1,
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        unit: 'day'
-                    }
-                }
-            }
-        }
-    });
+    const time_data = {{ litter_data[0] }};
+    const litter_data = {{ litter_data[1] }};
+    const data = time_data.map((e, i) => ({ date: e, litterCount: litter_data[i] }));
 </script>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="{{ url_for('static', filename='garbage-stats.js') }}"></script>
 {% endblock %}

@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#graph .line {
+  @apply stroke-slate-500 stroke-2;
+}
+
+#graph .area {
+  @apply fill-slate-100;
+}
+
+#graph .header {
+  @apply text-xl font-medium;
+}
