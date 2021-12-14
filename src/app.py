@@ -19,22 +19,11 @@ def get_property(id: int, property: str):
     return cur.execute(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
 
 
-def new_bin(id, img_path='bins/0.jpg', address='209 Bishan Street 23', location='Staircase 5A'):
-    '''
-    Parameters
-    ----------
-    id : str
-    img_path : str
-    address : str
-    location : str
-
-    Returns
-    -------
-    void
-        Adds new bin to database
-    '''
+def new_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A'):
+    '''Add a new bin to the database.'''
     cur.execute(f'ALTER TABLE data ADD bin{id} DEFAULT 0')
-    cur.execute(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}")')
+    cur.execute(
+        f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}")')
 
 
 def new_entry(data: list):
@@ -61,7 +50,7 @@ def index():
     return render_template('base.html', bins=dummy_bins)
 
 
-@app.route('/<int:id>')
+@app.route('/<id>')
 def garbage_stats(id):
     time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
     litter_counts = [i[0] for i in cur.execute(f'SELECT bin{id} FROM data')]
