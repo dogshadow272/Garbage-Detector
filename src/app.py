@@ -3,7 +3,8 @@ import sqlite3
 import time
 
 
-def delete_bin(id):
+def delete_bin(id: int):
+    '''Deletes bin with `id` from database'''
     cur.execute(f'ALTER TABLE data DROP bin{id}')
     cur.execute(f'DELETE FROM info WHERE id={id}')
 
@@ -32,7 +33,7 @@ def new_bin(id, img_path='bins/0.jpg', address='209 Bishan Street 23', location=
     void
         Adds new bin to database
     '''
-    cur.execute('ALTER TABLE data ADD bin7 DEFAULT 0')
+    cur.execute(f'ALTER TABLE data ADD bin{id} DEFAULT 0')
     cur.execute(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}")')
 
 
