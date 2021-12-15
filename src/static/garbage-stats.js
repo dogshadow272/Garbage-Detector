@@ -47,10 +47,12 @@ svg.append("path")
 // Add the X Axis
 svg.append("g")
     .attr("transform", `translate(0, ${height})`)
+    .attr("class", "axes")
     .call(d3.axisBottom(x));
 
 // Add the Y Axis
 svg.append("g")
+    .attr("class", "axes")
     .call(d3.axisLeft(y));
 
 // Add the header

@@ -13,3 +13,11 @@
 #graph .header {
   @apply text-xl font-medium;
 }
+
+#graph .axes text {
+  @apply fill-slate-700;
+}
+
+#graph .axes path {
+  @apply stroke-slate-700;
+}
