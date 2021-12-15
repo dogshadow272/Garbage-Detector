@@ -10,7 +10,7 @@
         <div class="bg-slate-100 shadow rounded-xl py-4 px-6">
             showing last week
         </div>
-        <div class="bg-slate-100 shadow rounded-xl py-4 px-6 font-mono font-semibold text-xl uppercase">
+        <div class="bg-slate-100 shadowg rounded-xl py-4 px-6 font-mono font-semibold text-xl uppercase">
             Max&nbsp;&nbsp;= 9<br>
             Mean&nbsp;= 4<br>
             Min&nbsp;&nbsp;= 2
@@ -23,6 +23,6 @@
     const litter_data = {{ litter_data[1] }};
     const data = time_data.map((e, i) => ({ date: e, litterCount: litter_data[i] }));
 </script>
-<script src="https://d3js.org/d3.v6.min.js"></script>
+<script src="{{ url_for('static', filename='d3.v6.min.js') }}"></script>
 <script src="{{ url_for('static', filename='garbage-stats.js') }}"></script>
 {% endblock %}

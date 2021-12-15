@@ -50,7 +50,7 @@ def index():
     return render_template('base.html', bins=dummy_bins)
 
 
-@app.route('/<id>')
+@app.route('/<int:id>')
 def garbage_stats(id):
     time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
     litter_counts = [i[0] for i in cur.execute(f'SELECT bin{id} FROM data')]
