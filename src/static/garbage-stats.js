@@ -1,5 +1,5 @@
 // Set the dimensions and margins of the graph
-const mt = 20, mr = 20, mb = 30, ml = 50;
+const mt = 20, mr = 20, mb = 30, ml = 30;
 const fWidth = 600, fHeight = 350;
 const width = fWidth - ml - mr, height = fHeight - mt - mb;
 
@@ -21,9 +21,9 @@ let litterLine = d3.line()
 
 // Create the SVG
 let svg = d3.select("#graph").append("svg")
-    // .attr('width', fWidth)
-    // .attr('height', fHeight)
-    .attr("viewBox", `0 0 ${fWidth} ${fHeight}`)
+    .attr('width', fWidth)
+    .attr('height', fHeight)
+    // .attr("viewBox", `0 0 ${fWidth} ${fHeight}`)
     .append("g")
     // Move the group element to the top left margin
     .attr("transform", `translate(${ml}, ${mt})`);
@@ -59,5 +59,6 @@ svg.append("g")
 svg.append('text')
     .attr('x', width / 2)
     .attr('y', 0)
+    .attr('text-anchor', 'middle')
     .attr('class', 'header')
     .text('Litter count');
