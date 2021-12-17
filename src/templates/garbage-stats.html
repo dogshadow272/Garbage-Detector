@@ -1,28 +1,34 @@
 {% extends 'base.html' %}
 
 {% block stats %}
-<h1 class="text-3xl font-bold">209 Bishan Street 23</h1>
-<h2 class="text-xl font-semibold">Staircase 5A</h2>
+<h1 class="text-3xl font-bold">{{ target.address }}</h1>
+<h2 class="text-xl font-semibold">{{ target.location }}</h2>
 
-<div class="flex gap-4 w-auto my-4 mx-auto">
-    <div id="graph" class="flex justify-center items-center"></div>
-    <div class="flex flex-col items-stretch gap-4 min-w-max">
-        <div class="bg-slate-200 shadow rounded-xl py-4 px-6">
-            showing last week
+<div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
+    <div id="graph" class="flex flex-grow justify-center items-center"></div>
+    <div class="flex flex-col justify-center text-center min-w-[400px] min-h-[300px] bg-slate-800 shadow rounded-xl">
+        {% if cam_connected %}
+        <img src="{{ url_for('static', filename=target.id) }}"
+            alt="Garbage bin at {{ target.address }}, {{ target.location }}">
+        {% else %}
+        <div class="text-slate-50 text-xl font-bold">No camera connected</div>
+        <div class="text-slate-300 font-normal">
+            <a href="#" class="text-cyan-400">Use your device</a>
+            to photograph this bin
         </div>
-        <div class="bg-slate-200 shadow rounded-xl py-4 px-6 font-mono font-semibold text-xl uppercase">
-            Max&nbsp;&nbsp;= 9<br>
-            Mean&nbsp;= 4<br>
-            Min&nbsp;&nbsp;= 2
-        </div>
+        {% endif %}
     </div>
+    <video class="hidden"></video>
+    <canvas class="hidden"></canvas>
 </div>
 
 <script>
+    // Ignore the linting errors - this is Jinja syntax
     const time_data = {{ litter_data[0] }};
     const litter_data = {{ litter_data[1] }};
     const data = time_data.map((e, i) => ({ date: e, litterCount: litter_data[i] }));
 </script>
 <script src="{{ url_for('static', filename='d3.v6.min.js') }}"></script>
 <script src="{{ url_for('static', filename='garbage-stats.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='camera-capture.js') }}"></script> -->
 {% endblock %}
