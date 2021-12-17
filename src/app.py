@@ -44,12 +44,13 @@ dummy_bins = [
     for i in range(1, len(cur.execute('SELECT id FROM info').fetchall()) + 1)
 ]
 for i in dummy_bins:
-    i['latest_litter_count'] = cur.execute(f'SELECT bin{i["id"]} FROM data ORDER BY time DESC').fetchone()[0]
+    i['latest_litter_count'] = cur.execute(
+        f'SELECT bin{i["id"]} FROM data ORDER BY time DESC').fetchone()[0]
 
 
 @app.route('/')
 def index():
-    return render_template('base.html', bins=dummy_bins)
+    return render_template('base.html', bins=dummy_bins, target=None)
 
 
 @app.route('/<int:id>')
@@ -61,10 +62,9 @@ def garbage_stats(id):
     for i in dummy_bins:
         if i['id'] == id:
             target = i
-    
-    print(target)
+            break
 
-    return render_template('garbage-stats.html', bins=dummy_bins, target=id, litter_data=litter_data)
+    return render_template('garbage-stats.html', bins=dummy_bins, target=target, litter_data=litter_data)
 
 
 if __name__ == '__main__':
