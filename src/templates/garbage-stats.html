@@ -7,16 +7,13 @@
 <div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
     <div id="graph" class="flex flex-grow justify-center items-center"></div>
     <div class="flex flex-col justify-center text-center min-w-[400px] min-h-[300px] bg-slate-800 shadow rounded-xl">
-        {% if cam_connected %}
-        <img src="{{ url_for('static', filename=target.id) }}"
+        <img id="photo" src="{{ url_for('static', filename=target.img_path) }}"
             alt="Garbage bin at {{ target.address }}, {{ target.location }}">
-        {% else %}
         <div class="text-slate-50 text-xl font-bold">No camera connected</div>
         <div class="text-slate-300 font-normal">
             <a href="#" class="text-cyan-400">Use your device</a>
             to photograph this bin
         </div>
-        {% endif %}
     </div>
     <video class="hidden"></video>
     <canvas class="hidden"></canvas>
@@ -30,5 +27,5 @@
 </script>
 <script src="{{ url_for('static', filename='d3.v6.min.js') }}"></script>
 <script src="{{ url_for('static', filename='garbage-stats.js') }}"></script>
-<!-- <script src="{{ url_for('static', filename='camera-capture.js') }}"></script> -->
+<script src="{{ url_for('static', filename='camera-capture.js') }}"></script>
 {% endblock %}
