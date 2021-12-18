@@ -4,11 +4,20 @@ con = sqlite3.connect('db.db', check_same_thread=False)
 cur = con.cursor()
 
 
-def create_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A', cam_connected: int = 0):
+def cam_timestamps():
+    camera_timestamps = [i[0] for i in cur.execute('SELECT cam_timestamp FROM info')]
+    return camera_timestamps
+
+
+def create_bin(id: int, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A', cam_connected: int = 0):
     '''Add a new bin to the database.'''
     cur.execute(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_connected})')
     cur.execute(f'CREATE TABLE bin{id} (time, litter_count)')
     cur.execute(f'INSERT INTO bin{id} VALUES (0, 0)')
+
+
+def change_info(id: int, property: str, value):
+    cur.execute(f'UPDATE info SET {property}={value} WHERE id={id}')
 
 
 def delete_bin(id: int):
@@ -54,3 +63,6 @@ def fetch_data():
 
 def save_changes():
     con.commit()
+
+if __name__ == '__main__':
+    print(cam_timestamps())

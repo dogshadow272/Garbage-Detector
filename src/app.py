@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect
 import boto3
 import db
+import time
+
+
+DELAY = 70
 
 
 app = Flask(__name__)
@@ -45,7 +49,9 @@ def new_bin():
 @app.route('/<int:id>/newcam')
 def new_cam(id):
     # Update DB here
-
+    db.change_info(id, 'cam_connected', 1)
+    db.change_info(id, 'cam_timestamp', time.time() + DELAY)
+    db.save_changes()
     return redirect(f'/{id}')
 
 
