@@ -63,8 +63,10 @@ def garbage_stats(id):
         return redirect(f'/{id}')
     else:
         # GET dashboard info for this bin
-        time_stamps = [i[0] for i in cur.execute(f'SELECT time FROM bin{id}').fetchall()]
-        litter_counts = [i[0] for i in cur.execute(f'SELECT litter_count FROM bin{id}').fetchall()]
+        time_stamps = [i[0] for i in cur.execute(
+            f'SELECT time FROM bin{id}').fetchall()]
+        litter_counts = [i[0] for i in cur.execute(
+            f'SELECT litter_count FROM bin{id}').fetchall()]
         litter_data = (time_stamps, litter_counts)
 
         for i in dummy_bins:
@@ -80,7 +82,7 @@ def new_bin():
     global next_id
     create_bin(next_id)
     next_id += 1
-    return redirect('/')
+    return redirect(f'/{next_id}')
 
 
 if __name__ == '__main__':
