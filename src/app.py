@@ -1,9 +1,5 @@
 from flask import Flask, render_template, request, redirect
-import sqlite3
-import time
-import base64
 import boto3
-
 import db
 
 
