@@ -1,6 +1,6 @@
 // Adapted from https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
 
-(() => {
+window.addEventListener('load', () => {
     let video = document.querySelector('video');
     let photo = document.querySelector('#photo');
     let canvas = document.querySelector('canvas');
@@ -30,8 +30,10 @@
         canvas.setAttribute('height', height);
         streaming = true;
 
-        takepicture();
-        setInterval(takepicture, 60000);
+        setTimeout(() => {
+            takepicture();
+            setInterval(takepicture, 60000);
+        }, 1000);
     }, false);
 
     function takepicture() {
@@ -52,4 +54,4 @@
             body: JSON.stringify({ data })
         });
     }
-})();
+}, false);
