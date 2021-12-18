@@ -53,11 +53,11 @@
 
     document.addEventListener("DOMContentLoaded", (event) => {
         let scrollpos = localStorage.getItem('scrollpos');
-        if (scrollpos) binNav.scrollTo(scrollpos, 0);
+        if (scrollpos) binNav.scrollTo(0, scrollpos);
     });
 
     window.onbeforeunload = (_) => {
-        localStorage.setItem('scrollpos', binNav.scrollLeft);
+        localStorage.setItem('scrollpos', binNav.scrollTop);
     };
 </script>
 
