@@ -46,5 +46,12 @@ def new_bin():
     return redirect(f'/{db.get_next_id()-1}')
 
 
+@app.route('/<int:id>/newcam')
+def new_cam(id):
+    # Update DB here
+
+    return redirect(f'/{id}')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
