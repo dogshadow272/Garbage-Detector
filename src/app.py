@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import sqlite3
 import time
+import base64
 
 
 def delete_bin(id: int):
@@ -57,7 +58,11 @@ def index():
 def garbage_stats(id):
     if request.method == 'POST':
         # POST image of bin
-        pass  # Placeholder for database stuff
+
+        # Convert base64 string to png file
+        img_file = base64.decodestring(id)
+
+        return redirect(f'/{id}')
     else:
         # GET dashboard info for this bin
         time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
