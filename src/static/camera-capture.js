@@ -30,7 +30,8 @@
         canvas.setAttribute('height', height);
         streaming = true;
 
-        setTimeout(takepicture, 1000);
+        takepicture();
+        setInterval(takepicture, 60000);
     }, false);
 
     function takepicture() {
