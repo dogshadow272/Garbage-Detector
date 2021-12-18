@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, redirect
 import sqlite3
 import time
 import base64
+import boto3
 
 
 def delete_bin(id: int):
     '''Deletes bin with `id` from database'''
-    cur.execute(f'ALTER TABLE data DROP bin{id}')
     cur.execute(f'DELETE FROM info WHERE id={id}')
+    cur.execute(f'DROP TABLE bin{id}')
 
 
 def get_columns(table: str) -> list:
@@ -20,23 +21,18 @@ def get_property(id: int, property: str):
     return cur.execute(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
 
 
-def new_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A'):
+def new_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A', cam_connected: int = 0):
     '''Add a new bin to the database.'''
-    cur.execute(f'ALTER TABLE data ADD bin{id} DEFAULT 0')
     cur.execute(
-        f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}")')
-
-
-def new_entry(data: list):
-    '''Insert data into SQL database.'''
-    cur.execute(
-        f'INSERT INTO data VALUES ({time.time()}, {", ".join(map(str, data))})'
-    )
+        f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_connected})')
+    cur.execute(f'CREATE TABLE bin{id} (time, litter_count)')
 
 
 app = Flask(__name__)
 con = sqlite3.connect('src/db.db', check_same_thread=False)
 cur = con.cursor()
+s3 = boto3.resource('s3')
+bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
 
 dummy_bins = [
     {
