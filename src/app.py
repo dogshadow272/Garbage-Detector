@@ -40,8 +40,9 @@ def fetch_data():
     for i in bins:
         i['latest_litter_count'] = cur.execute(
             f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC').fetchone()[0]
-    
+
     return bins
+
 
 app = Flask(__name__)
 con = sqlite3.connect('db.db', check_same_thread=False)
@@ -89,13 +90,20 @@ def new_bin():
     global next_id
     create_bin(next_id)
     next_id += 1
-    
+
     global dummy_bins
     dummy_bins = fetch_data()
 
     con.commit()
 
     return redirect(f'/{next_id-1}')
+
+
+@app.route('/<int:id>/newcam')
+def new_cam(id):
+    # Update DB here
+
+    return redirect(f'/{id}')
 
 
 if __name__ == '__main__':
