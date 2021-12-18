@@ -7,6 +7,9 @@ import boto3
 import db
 
 
+DELAY = 70
+
+
 app = Flask(__name__)
 s3 = boto3.resource('s3')
 bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
@@ -49,7 +52,9 @@ def new_bin():
 @app.route('/<int:id>/newcam')
 def new_cam(id):
     # Update DB here
-
+    db.change_info(id, 'cam_connected', 1)
+    db.change_info(id, 'cam_timestamp', time.time() + DELAY)
+    db.save_changes()
     return redirect(f'/{id}')
 
 
