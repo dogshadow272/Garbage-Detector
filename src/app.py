@@ -21,7 +21,6 @@ def index():
 def garbage_stats(id):
     if request.method == 'POST':
         # Recieve POST request for image of bin
-
         # Convert base64 string to png file
         b64_str = request.json['data']
         print(b64_str)
