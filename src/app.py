@@ -29,7 +29,7 @@ def create_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan
 
 
 app = Flask(__name__)
-con = sqlite3.connect('src/db.db', check_same_thread=False)
+con = sqlite3.connect('db.db', check_same_thread=False)
 cur = con.cursor()
 s3 = boto3.resource('s3')
 bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
