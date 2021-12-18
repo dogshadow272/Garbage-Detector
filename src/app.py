@@ -22,9 +22,9 @@ def garbage_stats(id):
     if request.method == 'POST':
         # Recieve POST request for image of bin
         # Convert base64 string to png file
-        b64_str = request.json['data']
-        print(b64_str)
-        # img_file = base64.standard_b64decode(request.json['data'])
+        img_name = request.form['img_name']
+        print(img_name)
+
         return redirect(f'/{id}')
     else:
         # GET dashboard info for this bin
