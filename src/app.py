@@ -47,7 +47,6 @@ for i in dummy_bins:
     i['latest_litter_count'] = cur.execute(
         f'SELECT bin{i["id"]} FROM data ORDER BY time DESC').fetchone()[0]
 
-
 @app.route('/')
 def index():
     return render_template('base.html', bins=dummy_bins, target=None)
