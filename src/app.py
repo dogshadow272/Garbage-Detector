@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import sqlite3
 import time
 
@@ -53,18 +53,24 @@ def index():
     return render_template('base.html', bins=dummy_bins, target=None)
 
 
-@app.route('/<int:id>')
+@app.route('/<int:id>', methods=['POST', 'GET'])
 def garbage_stats(id):
-    time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
-    litter_counts = [i[0] for i in cur.execute(f'SELECT bin{id} FROM data')]
-    litter_data = (time_stamps, litter_counts)
+    if request.method == 'POST':
+        # POST image of bin
+        pass  # Placeholder for database stuff
+    else:
+        # GET dashboard info for this bin
+        time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
+        litter_counts = [i[0]
+                         for i in cur.execute(f'SELECT bin{id} FROM data')]
+        litter_data = (time_stamps, litter_counts)
 
-    for i in dummy_bins:
-        if i['id'] == id:
-            target = i
-            break
+        for i in dummy_bins:
+            if i['id'] == id:
+                target = i
+                break
 
-    return render_template('garbage-stats.html', bins=dummy_bins, target=target, litter_data=litter_data)
+        return render_template('garbage-stats.html', bins=dummy_bins, target=target, litter_data=litter_data)
 
 
 if __name__ == '__main__':
