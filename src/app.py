@@ -48,6 +48,7 @@ for i in dummy_bins:
     i['latest_litter_count'] = cur.execute(
         f'SELECT bin{i["id"]} FROM data ORDER BY time DESC').fetchone()[0]
 
+
 @app.route('/')
 def index():
     return render_template('base.html', bins=dummy_bins, target=None)
@@ -59,8 +60,9 @@ def garbage_stats(id):
         # POST image of bin
 
         # Convert base64 string to png file
-        img_file = base64.decodestring(id)
-
+        b64_str = request.json['data']
+        print(b64_str)
+        # img_file = base64.standard_b64decode(request.json['data'])
         return redirect(f'/{id}')
     else:
         # GET dashboard info for this bin
