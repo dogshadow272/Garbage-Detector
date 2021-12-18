@@ -26,7 +26,22 @@ def create_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan
     cur.execute(
         f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_connected})')
     cur.execute(f'CREATE TABLE bin{id} (time, litter_count)')
+    cur.execute(f'INSERT INTO bin{id} VALUES (0, 0)')
+    return 'done'
 
+
+def fetch_data():
+    bins = [
+        {
+            j: get_property(i, j) for j in get_columns('info')
+        }
+        for i in range(1, len(cur.execute('SELECT id FROM info').fetchall()) + 1)
+    ]
+    for i in bins:
+        i['latest_litter_count'] = cur.execute(
+            f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC').fetchone()[0]
+    
+    return bins
 
 app = Flask(__name__)
 con = sqlite3.connect('db.db', check_same_thread=False)
@@ -34,15 +49,7 @@ cur = con.cursor()
 s3 = boto3.resource('s3')
 bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
 
-dummy_bins = [
-    {
-        j: get_property(i, j) for j in get_columns('info')
-    }
-    for i in range(1, len(cur.execute('SELECT id FROM info').fetchall()) + 1)
-]
-for i in dummy_bins:
-    i['latest_litter_count'] = cur.execute(
-        f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC').fetchone()[0]
+dummy_bins = fetch_data()
 next_id = len(cur.execute('SELECT id FROM info').fetchall()) + 1
 
 
@@ -82,7 +89,13 @@ def new_bin():
     global next_id
     create_bin(next_id)
     next_id += 1
-    return redirect(f'/{next_id}')
+    
+    global dummy_bins
+    dummy_bins = fetch_data()
+
+    con.commit()
+
+    return redirect(f'/{next_id-1}')
 
 
 if __name__ == '__main__':
