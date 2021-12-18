@@ -42,7 +42,8 @@ dummy_bins = [
 ]
 for i in dummy_bins:
     i['latest_litter_count'] = cur.execute(
-        f'SELECT bin{i["id"]} FROM data ORDER BY time DESC').fetchone()[0]
+        f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC').fetchone()[0]
+next_id = len(cur.execute('SELECT id FROM info').fetchall()) + 1
 
 
 @app.route('/')
@@ -62,9 +63,8 @@ def garbage_stats(id):
         return redirect(f'/{id}')
     else:
         # GET dashboard info for this bin
-        time_stamps = [i[0] for i in cur.execute('SELECT time FROM data')]
-        litter_counts = [i[0]
-                         for i in cur.execute(f'SELECT bin{id} FROM data')]
+        time_stamps = [i[0] for i in cur.execute(f'SELECT time FROM bin{id}').fetchall()]
+        litter_counts = [i[0] for i in cur.execute(f'SELECT litter_count FROM bin{id}').fetchall()]
         litter_data = (time_stamps, litter_counts)
 
         for i in dummy_bins:
@@ -75,8 +75,11 @@ def garbage_stats(id):
         return render_template('garbage-stats.html', bins=dummy_bins, target=target, litter_data=litter_data)
 
 
-@app.route('/newbin', methods=['POST'])
+@app.route('/newbin')
 def new_bin():
+    global next_id
+    create_bin(next_id)
+    next_id += 1
     return redirect('/')
 
 
