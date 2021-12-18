@@ -15,6 +15,7 @@
         <a href="/">
             <h1 class="text-2xl font-extrabold text-slate-800 w-full text-center my-5">garbage-detect</h1>
         </a>
+
         {% for bin in bins %}
         <a class="rounded-xl leading-5 duration-200 flex items-center min-h-[3.5rem]        
         {% if target.id == bin.id %}
@@ -35,6 +36,8 @@
             </div>
         </a>
         {% endfor %}
+
+        <button onclick="addNewBin()">+</button>
     </nav>
 
     <main class="py-8 px-10 h-full flex-grow overflow-y-scroll">
@@ -45,6 +48,7 @@
 </body>
 
 <script>
+    // Remeber scroll position on page navigation
     const binNav = document.getElementById('binNav');
 
     document.addEventListener("DOMContentLoaded", (event) => {
@@ -55,6 +59,11 @@
     window.onbeforeunload = (_) => {
         localStorage.setItem('scrollpos', binNav.scrollLeft);
     };
+
+    // Bin creation functionality
+    function addNewBin() {
+        fetch('/newbin');
+    }
 </script>
 
 

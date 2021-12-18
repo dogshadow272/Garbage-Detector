@@ -21,7 +21,7 @@ def get_property(id: int, property: str):
     return cur.execute(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
 
 
-def new_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A', cam_connected: int = 0):
+def create_bin(id: str, img_path: str = 'bins/0.jpg', address: str = '209 Bishan Street 23', location: str = 'Staircase 5A', cam_connected: int = 0):
     '''Add a new bin to the database.'''
     cur.execute(
         f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_connected})')
@@ -53,7 +53,7 @@ def index():
 @app.route('/<int:id>', methods=['POST', 'GET'])
 def garbage_stats(id):
     if request.method == 'POST':
-        # POST image of bin
+        # Recieve POST request for image of bin
 
         # Convert base64 string to png file
         b64_str = request.json['data']
@@ -73,6 +73,11 @@ def garbage_stats(id):
                 break
 
         return render_template('garbage-stats.html', bins=dummy_bins, target=target, litter_data=litter_data)
+
+
+@app.route('/newbin', methods=['POST'])
+def new_bin():
+    return redirect('/')
 
 
 if __name__ == '__main__':
