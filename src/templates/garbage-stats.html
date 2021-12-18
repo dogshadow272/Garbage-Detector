@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 
 {% block stats %}
-<h1 class="text-3xl font-bold">{{ target.address }}</h1>
-<h2 class="text-xl font-semibold">{{ target.location }}</h2>
+<div class="flex items-center gap-x-5">
+    <span>
+        <h1 class="text-3xl font-bold">{{ target.address }}</h1>
+        <h2 class="text-xl font-semibold">{{ target.location }}</h2>
+    </span>
+    <span>
+        <a href="/{{ target.id }}/delete" class="text-cyan-400">Delete</a>
+    </span>
+</div>
 
 <div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
     <div id="graph" class="flex flex-grow justify-center items-center"></div>

@@ -49,5 +49,12 @@ def new_cam(id):
     return redirect(f'/{id}')
 
 
+@app.route('/<int:id>/delete')
+def delete(id):
+    # Update DB here
+
+    return redirect('/')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
