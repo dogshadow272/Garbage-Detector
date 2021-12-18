@@ -37,7 +37,7 @@
         </a>
         {% endfor %}
 
-        <button onclick="addNewBin()">+</button>
+        <a href="/newbin" class="text-center">+</a>
     </nav>
 
     <main class="py-8 px-10 h-full flex-grow overflow-y-scroll">
@@ -59,11 +59,6 @@
     window.onbeforeunload = (_) => {
         localStorage.setItem('scrollpos', binNav.scrollLeft);
     };
-
-    // Bin creation functionality
-    function addNewBin() {
-        fetch('/newbin');
-    }
 </script>
 
 
