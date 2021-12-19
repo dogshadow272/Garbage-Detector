@@ -1,4 +1,5 @@
 import sqlite3
+from time import time
 
 con = sqlite3.connect('db.db', check_same_thread=False)
 sql = con.cursor().execute
@@ -66,8 +67,9 @@ def fetch_bins():
         for (i,) in sql('SELECT id FROM info').fetchall()
     ]
 
-    # `latest_litter_count` is not stored in the database, so we update the dicts here
+    # These keys are not stored in the database, so we update the dicts here
     for i in bins:
+        i['cam_connected'] = time() < i['cam_expiry']
         i['latest_litter_count'] = sql(
             f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC'
         ).fetchone()[0]
