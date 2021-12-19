@@ -54,12 +54,10 @@ def get_litter_counts(id):
 
 def get_property(id: int, property: str):
     '''Return the value of `property` on the bin with whose id is `id`.'''
-    print(f'SELECT {property} FROM info WHERE id="{id}"')
     return sql(f'SELECT {property} FROM info WHERE id="{id}"').fetchone()[0]
 
 
 def get_time_stamps(id):
-    print(f'SELECT time FROM bin{id}')
     return [i[0] for i in sql(f'SELECT time FROM bin{id}').fetchall()]
 
 
