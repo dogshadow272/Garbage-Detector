@@ -5,8 +5,8 @@ con = sqlite3.connect('db.db', check_same_thread=False)
 sql = con.cursor().execute
 
 
-def cam_timestamps():
-    return [i[0] for i in sql('SELECT cam_timestamp FROM info')]
+def cam_expiries():
+    return [i[0] for i in sql('SELECT cam_expiry FROM info')]
 
 
 def create_bin(
@@ -78,4 +78,4 @@ def fetch_bins():
 
 
 if __name__ == '__main__':
-    print(cam_timestamps())
+    print(cam_expiries())
