@@ -1,5 +1,6 @@
 import sqlite3
 from time import time
+from uuid import uuid4
 
 con = sqlite3.connect('db.db', check_same_thread=False)
 sql = con.cursor().execute
@@ -10,29 +11,30 @@ def cam_expiries():
 
 
 def create_bin(
-        id: int,
         img_path: str = 'bins/0.jpg',
         address: str = '209 Bishan Street 23',
         location: str = 'Staircase 5A',
-        cam_expiry: int = 0):
+        cam_expiry: int = 0) -> str:
     '''Add a new bin to the database.'''
+    # Generate unique id
+    id = str(uuid4())[:8]
 
-    # TODO: remove the 0 when the SQL table has been updated
-    sql(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_expiry})')
+    sql(f'INSERT INTO info VALUES ("{id}", "{img_path}", "{address}", "{location}", {cam_expiry})')
     sql(f'CREATE TABLE bin{id} (time, litter_count)')
     sql(f'INSERT INTO bin{id} VALUES (0, 0)')
-
     con.commit()
+
+    return id
 
 
 def update_bin(id: int, property: str, value):
-    sql(f'UPDATE info SET {property}={value} WHERE id={id}')
+    sql(f'UPDATE info SET {property}={value} WHERE id="{id}"')
     con.commit()
 
 
 def delete_bin(id: int):
     '''Deletes bin with `id` from database'''
-    sql(f'DELETE FROM info WHERE id={id}')
+    sql(f'DELETE FROM info WHERE id="{id}"')
     sql(f'DROP TABLE bin{id}')
     con.commit()
 
@@ -52,10 +54,12 @@ def get_litter_counts(id):
 
 def get_property(id: int, property: str):
     '''Return the value of `property` on the bin with whose id is `id`.'''
-    return sql(f'SELECT {property} FROM info WHERE id={id}').fetchone()[0]
+    print(f'SELECT {property} FROM info WHERE id="{id}"')
+    return sql(f'SELECT {property} FROM info WHERE id="{id}"').fetchone()[0]
 
 
 def get_time_stamps(id):
+    print(f'SELECT time FROM bin{id}')
     return [i[0] for i in sql(f'SELECT time FROM bin{id}').fetchall()]
 
 

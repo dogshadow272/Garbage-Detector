@@ -6,7 +6,6 @@ import time
 
 DELAY = 70
 
-
 app = Flask(__name__)
 s3 = boto3.resource('s3')
 bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
@@ -17,7 +16,7 @@ def index():
     return render_template('base.html', bins=db.fetch_bins(), target=None)
 
 
-@app.route('/<int:id>', methods=['POST', 'GET'])
+@app.route('/b/<id>', methods=['POST', 'GET'])
 def garbage_stats(id):
     if request.method == 'POST':
         # Handle `camera.py`'s POST request
@@ -38,17 +37,17 @@ def garbage_stats(id):
 
 @app.route('/newbin')
 def new_bin():
-    db.create_bin(db.get_next_id())
-    return redirect(f'/{db.get_next_id()-1}')
+    id = db.create_bin()
+    return redirect(f'/b/{id}')
 
 
-@app.route('/<int:id>/newcam')
+@app.route('/b/<id>/newcam')
 def new_cam(id):
     db.update_bin(id, 'cam_timestamp', time.time() + DELAY)
     return redirect(f'/{id}')
 
 
-@app.route('/<int:id>/delete')
+@app.route('/b/<id>/delete')
 def delete(id):
     db.delete_bin(id)
     return redirect('/')
