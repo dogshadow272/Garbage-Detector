@@ -20,10 +20,6 @@
             alt="Garbage bin at {{ target.address }}, {{ target.location }}">
         {% else %}
         <div class="text-slate-50 text-xl font-bold">No camera connected</div>
-        <div class="text-slate-300 font-normal">
-            <a href="/{{ target.id }}/newcam" class="text-cyan-400">Use your device</a>
-            to photograph this bin
-        </div>
         {% endif %}
     </div>
 </div>
