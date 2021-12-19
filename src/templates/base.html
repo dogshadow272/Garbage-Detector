@@ -17,19 +17,25 @@
         </a>
 
         {% for bin in bins %}
-        <a class="rounded-xl leading-5 duration-200 flex items-center min-h-[3.5rem]        
+        <a class="rounded-xl leading-5 duration-200 flex items-center min-h-[3.5rem]
         {% if target.id == bin.id %}
         bg-slate-700 text-slate-100
         {% else %} 
         hover:bg-slate-200
         {% endif %}" href="/b/{{bin.id}}">
-            <!-- <img class="w-64 h-44 object-cover" src="{{ url_for('static', filename=bin.img_path) }}" alt="Garbage bin"> -->
-            <div class="text-2xl font-semibold px-4 ml-1 h-[calc(100%-0.5rem)] flex items-center rounded-lg
-            {% if target.id == bin.id %}
-            bg-slate-800 text-slate-100 
-            {% else %}
-            bg-slate-300 text-slate-400 
-            {% endif %}">{{ bin.latest_litter_count }}</div>
+            <div class="text-2xl font-semibold w-14 ml-1 h-[calc(100%-0.5rem)] 
+            flex items-center justify-center rounded-lg group overflow-hidden
+            {% if target.id == bin.id %} bg-slate-800 text-slate-100
+            {% else %} bg-slate-300 text-slate-400 {% endif %}">
+                <span class="group-hover:hidden">{{ bin.latest_litter_count }}</span>
+                <button onclick="deleteBin(event, '{{bin.id}}')" class="hidden group-hover:inline-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>
+            </div>
             <div class="px-5 py-2 text-sm">
                 <div class="font-bold">{{ bin.address }}</div>
                 <div class="font-normal">{{ bin.location }}</div>
@@ -48,6 +54,11 @@
 </body>
 
 <script>
+    function deleteBin(e, id) {
+        e.preventDefault();
+        fetch(`/b/${id}/delete`).then(res => window.location = res.url)
+    }
+
     // Remeber scroll position on page navigation
     const binNav = document.getElementById('binNav');
 
