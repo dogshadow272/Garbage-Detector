@@ -18,7 +18,7 @@ def create_bin(
     '''Add a new bin to the database.'''
 
     # TODO: remove the 0 when the SQL table has been updated
-    sql(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", 0, {cam_expiry})')
+    sql(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_expiry})')
     sql(f'CREATE TABLE bin{id} (time, litter_count)')
     sql(f'INSERT INTO bin{id} VALUES (0, 0)')
 
