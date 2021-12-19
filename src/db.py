@@ -5,8 +5,7 @@ sql = con.cursor().execute
 
 
 def cam_timestamps():
-    camera_timestamps = [i[0] for i in sql('SELECT cam_timestamp FROM info')]
-    return camera_timestamps
+    return [i[0] for i in sql('SELECT cam_timestamp FROM info')]
 
 
 def create_bin(
@@ -14,23 +13,27 @@ def create_bin(
         img_path: str = 'bins/0.jpg',
         address: str = '209 Bishan Street 23',
         location: str = 'Staircase 5A',
-        cam_connected: int = 0,
-        cam_timestamp: int = 0):
+        cam_expiry: int = 0):
     '''Add a new bin to the database.'''
 
-    sql(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", {cam_connected}, {cam_timestamp})')
+    # TODO: remove the 0 when the SQL table has been updated
+    sql(f'INSERT INTO info VALUES ({id}, "{img_path}", "{address}", "{location}", 0, {cam_expiry})')
     sql(f'CREATE TABLE bin{id} (time, litter_count)')
     sql(f'INSERT INTO bin{id} VALUES (0, 0)')
 
+    con.commit()
 
-def change_info(id: int, property: str, value):
+
+def update_bin(id: int, property: str, value):
     sql(f'UPDATE info SET {property}={value} WHERE id={id}')
+    con.commit()
 
 
 def delete_bin(id: int):
     '''Deletes bin with `id` from database'''
     sql(f'DELETE FROM info WHERE id={id}')
     sql(f'DROP TABLE bin{id}')
+    con.commit()
 
 
 def get_columns(table: str) -> list:
@@ -55,22 +58,21 @@ def get_time_stamps(id):
     return [i[0] for i in sql(f'SELECT time FROM bin{id}').fetchall()]
 
 
-def fetch_data():
+def fetch_bins():
     bins = [
         {
-            j: get_property(i, j) for j in get_columns('info')
+            prop: get_property(i, prop) for prop in get_columns('info')
         }
-        for i in range(1, len(sql('SELECT id FROM info').fetchall()) + 1)
+        for (i,) in sql('SELECT id FROM info').fetchall()
     ]
+
+    # `latest_litter_count` is not stored in the database, so we update the dicts here
     for i in bins:
         i['latest_litter_count'] = sql(
-            f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC').fetchone()[0]
+            f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC'
+        ).fetchone()[0]
 
     return bins
-
-
-def save_changes():
-    con.commit()
 
 
 if __name__ == '__main__':

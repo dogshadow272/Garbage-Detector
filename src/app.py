@@ -14,50 +14,43 @@ bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
 
 @app.route('/')
 def index():
-    return render_template('base.html', bins=db.fetch_data(), target=None)
+    return render_template('base.html', bins=db.fetch_bins(), target=None)
 
 
 @app.route('/<int:id>', methods=['POST', 'GET'])
 def garbage_stats(id):
     if request.method == 'POST':
-        # Recieve POST request for image of bin
-        # Convert base64 string to png file
-        img_name = request.form['img_name']
-        print(img_name)
+        # Handle `camera.py`'s POST request
+        print(request.form)
 
-        return redirect(f'/{id}')
+        return ''
     else:
         # GET dashboard info for this bin
         litter_data = (db.get_time_stamps(id), db.get_litter_counts(id))
 
-        for i in db.fetch_data():
+        for i in db.fetch_bins():
             if i['id'] == id:
                 target = i
                 break
 
-        return render_template('garbage-stats.html', bins=db.fetch_data(), target=target, litter_data=litter_data)
+        return render_template('garbage-stats.html', bins=db.fetch_bins(), target=target, litter_data=litter_data)
 
 
 @app.route('/newbin')
 def new_bin():
     db.create_bin(db.get_next_id())
-    db.save_changes()
     return redirect(f'/{db.get_next_id()-1}')
 
 
 @app.route('/<int:id>/newcam')
 def new_cam(id):
-    # Update DB here
-    db.change_info(id, 'cam_connected', 1)
-    db.change_info(id, 'cam_timestamp', time.time() + DELAY)
-    db.save_changes()
+    db.update_bin(id, 'cam_timestamp', time.time() + DELAY)
     return redirect(f'/{id}')
 
 
 @app.route('/<int:id>/delete')
 def delete(id):
-    # Update DB here
-
+    db.delete_bin(id)
     return redirect('/')
 
 
