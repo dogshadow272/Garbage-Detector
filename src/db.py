@@ -17,7 +17,7 @@ def create_bin(
         cam_expiry: int = 0) -> str:
     '''Add a new bin to the database.'''
     # Generate unique id
-    id = str(uuid4())[:8]
+    id = str(uuid4())[:6]
 
     sql(f'INSERT INTO info VALUES ("{id}", "{img_path}", "{address}", "{location}", {cam_expiry})')
     sql(f'CREATE TABLE bin{id} (time, litter_count)')
@@ -27,12 +27,13 @@ def create_bin(
     return id
 
 
-def update_bin(id: int, property: str, value):
+def update_bin(id: str, property: str, value):
+    '''Set `property` of bin #`id` to `value`.'''
     sql(f'UPDATE info SET {property}={value} WHERE id="{id}"')
     con.commit()
 
 
-def delete_bin(id: int):
+def delete_bin(id: str):
     '''Deletes bin with `id` from database'''
     sql(f'DELETE FROM info WHERE id="{id}"')
     sql(f'DROP TABLE bin{id}')
@@ -52,7 +53,7 @@ def get_litter_counts(id):
     return [i[0] for i in sql(f'SELECT litter_count FROM bin{id}').fetchall()]
 
 
-def get_property(id: int, property: str):
+def get_property(id: str, property: str):
     '''Return the value of `property` on the bin with whose id is `id`.'''
     return sql(f'SELECT {property} FROM info WHERE id="{id}"').fetchone()[0]
 
