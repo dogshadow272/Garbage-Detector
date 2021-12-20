@@ -1,48 +1,76 @@
-import cv2  # imports
-from time import sleep
-import os
+import cv2
+from tempfile import TemporaryFile
+from numpy import save
+from time import sleep, time
 import requests
-from datetime import date, datetime
 import boto3
 
 
-cam = cv2.VideoCapture(0) # start camera
-today = date.today()
+# Start camera
+cam = cv2.VideoCapture(0)
+# Set this to the relevant camera ID
+CAMERA_ID = '123456'
 
-img_counter = 0
-camera_id = 1  # IMPORTANT: SET ID TO RELEVENT CAMERA
+# URL of the web server
+WEB_SERVER = 'http://localhost:5000'
+
 s3 = boto3.resource('s3')
-client = boto3.client('rekognition',region_name='us-east-1')
+BUCKET_NAME = 'images-1553'
+client = boto3.client('rekognition', region_name='us-east-1')
+
 
 while True:
+    # Take picture
     ret, frame = cam.read()
+
     if not ret:
-        print("failed to grab frame")
+        print("Failed to grab frame")
         break
-    sleep(600)
 
-    timenow = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=8)))
-    img_name = f"{timenow.year}/{timenow.month}/{timenow.day}_{timenow.hour}:{timenow.minute}.png"
-    cv2.imwrite(img_name, frame)
-    s3.Bucket(f'images-1553').upload_file(img_name, f'{camera_id}/{img_name}')
-    os.system(f'rm {img_name}')
+    img_name = f'{CAMERA_ID}-{int(time())}.png'
 
-    response = client.detect_custom_labels(  # Custom Label Detection
-    ProjectVersionArn='arn:aws:rekognition:us-east-1:338430903861:project/AWSAcceleratorProject/version/AWSAcceleratorProject.2021-12-18T13.23.11/1639804992696',
-    Image={
-        # 'Bytes': b'bytes',
-        'S3Object': {
-            'Bucket': f'images-1553/{camera_id}',
-            'Name': 'img_name',
-        }
-    },
-    MaxResults=123,
-    # MinConfidence=... (Ammend if required)
+    # `This is needed because s3.Bucket.upload_fileobj
+    # requires a Fileobj that implements read
+    img_obj = TemporaryFile()
+    save(img_obj, cv2.imencode('.png', frame)[1])
+
+    # Upload the image to S3
+    s3.Bucket(BUCKET_NAME).upload_fileobj(img_obj, img_name)
+
+    # Custom label detection
+    response = client.detect_custom_labels(
+        ProjectVersionArn='arn:aws:rekognition:us-east-1:338430903861:project/AWSAcceleratorProject/version/AWSAcceleratorProject.2021-12-18T13.23.11/1639804992696',
+        Image={
+            'S3Object': {
+                'Bucket': BUCKET_NAME,
+                'Name': img_name,
+            }
+        },
+        # MinConfidence=70
     )
-    plasticBags = len(response['CustomLabels'])
 
-    url = f'https://ide-37415cdf43eb4b2aa570be45f9eb632e-8080.cs50.ws/{camera_id}'
-    myobj = {'PlasticCount': f'{plasticBags}'}
-    x = requests.post(url, data = myobj)
+    output = {
+        'litterCount': len(response['CustomLabels']),
+        'litterItems': []
+    }
+
+    # Transform Rekognition's response to fit the schema defined in app.py
+    for item in response['CustomLabels']:
+        bb = item['Geometry']['BoundingBox']
+
+        output['litterItems'].append({
+            'label': item['Name'],
+            'confidence': item['Confidence'],
+            'width': bb['Width'],
+            'height': bb['Height'],
+            'left': bb['Left'],
+            'top': bb['Top']
+        })
+
+    # Send results to webserver
+    requests.post(f'{WEB_SERVER}/b/{CAMERA_ID}', data=output)
+
+    # Capture images in one-minute intervals
+    sleep(600)
 
 cam.release()
