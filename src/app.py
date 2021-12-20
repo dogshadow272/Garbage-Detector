@@ -16,28 +16,59 @@ def index():
     return render_template('base.html', bins=db.fetch_bins(), target=None)
 
 
+def request_litter_data(id: str) -> str:
+    # Get litter counts and their corresponding timestamps
+    litter_data = (db.get_time_stamps(id), db.get_litter_counts(id))
+    bins = db.fetch_bins()
+
+    # Find the target bin
+    for i in bins:
+        if i['id'] == id:
+            target = i
+            break
+
+    return render_template('garbage-stats.html', bins=bins, target=target, litter_data=litter_data)
+
+
+def receive_camera_input(id: str):
+    '''Handle `camera.py`'s POST request.
+
+    Request body shape:
+    ```
+    {
+        'litterCount': int,
+        'litterItems': [
+            {
+                'label': str,
+                'confidence': float,
+                'width': float,
+                'height': float,
+                'left': float,
+                'top': float
+            }
+        ]
+    }
+    ```
+    '''
+    res = request.json
+
+
+def update_bin_details(id: str):
+    # Update address and location of bin
+    field, value = request.json['field'], f'"{request.json["value"]}"'
+    db.update_bin(id, field, value)
+
+
 @app.route('/b/<id>', methods=['GET', 'POST', 'PUT'])
-def garbage_stats(id):
+def garbage_stats(id) -> str:
     if request.method == 'GET':
-        # GET dashboard info for this bin
-        litter_data = (db.get_time_stamps(id), db.get_litter_counts(id))
-
-        for i in db.fetch_bins():
-            if i['id'] == id:
-                target = i
-                break
-
-        return render_template('garbage-stats.html', bins=db.fetch_bins(), target=target, litter_data=litter_data)
+        return request_litter_data(id)
     elif request.method == 'POST':
-        # Handle `camera.py`'s POST request
-        print(request.form)
-        return ''
+        receive_camera_input(id)
     else:
-        # Update address/location of bin
-        field, value = request.json['field'], f'"{request.json["value"]}"'
-        db.update_bin(id, field, value)
+        update_bin_details(id)
 
-        return ''
+    return ''
 
 
 @app.route('/newbin')
