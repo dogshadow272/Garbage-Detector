@@ -1,14 +1,17 @@
 {% extends 'base.html' %}
 
 {% block stats %}
-<input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent 
-    text-3xl font-bold rounded-md focus-visible:ring-2 focus-visible:ring-slate-300 
+<input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent
+    text-3xl font-bold rounded-md focus-visible:ring-2 focus-visible:ring-slate-300
     focus-visible:rounded focus-visible:outline-none px-2 py-1" value="{{target.address}}" placeholder="Address"
-    onfocusout="saveContent(this, 'address')" data-prev-value="{{target.address}}">
-<input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent 
+    onfocusout="saveContent(this, 'address')" data-prev-value="{{target.address}}"
+    onkeyup="if (event.keyCode == 13) this.blur();">
+
+<input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent
     text-xl font-semibold rounded-md focus-visible:ring-2 focus-visible:ring-slate-300
     focus-visible:rounded focus-visible:outline-none px-2 py-1" value="{{target.location}}" placeholder="Location"
-    onfocusout="saveContent(this, 'location')" data-prev-value="{{target.location}}">
+    onfocusout="saveContent(this, 'location')" data-prev-value="{{target.location}}"
+    onkeyup="if (event.keyCode == 13) this.blur();">
 
 <div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
     <div id="graph" class="flex flex-grow justify-center items-center"></div>
