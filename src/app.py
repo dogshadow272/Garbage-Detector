@@ -46,12 +46,6 @@ def new_bin():
     return redirect(f'/b/{id}')
 
 
-@app.route('/b/<id>/newcam')
-def new_cam(id):
-    db.update_bin(id, 'cam_timestamp', time.time() + DELAY)
-    return redirect(f'/{id}')
-
-
 @app.route('/b/<id>/delete')
 def delete(id):
     db.delete_bin(id)
