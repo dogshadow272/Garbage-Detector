@@ -17,14 +17,11 @@
         </a>
 
         {% for bin in bins %}
-        <a class="rounded-xl leading-5 duration-200 flex items-center min-h-[3.5rem]
-        {% if target.id == bin.id %}
-        bg-slate-700 text-slate-100
-        {% else %} 
-        hover:bg-slate-200
-        {% endif %}" href="/b/{{bin.id}}">
+        <a class="rounded-xl leading-5 duration-200 flex items-center min-h-[3.5rem] group
+        {% if target.id == bin.id %} bg-slate-700 text-slate-100
+        {% else %}  hover:bg-slate-200 {% endif %}" href="/b/{{bin.id}}">
             <div class="text-2xl font-semibold w-14 ml-1 h-[calc(100%-0.5rem)] 
-            flex items-center justify-center rounded-lg group overflow-hidden
+            flex items-center justify-center rounded-lg overflow-hidden
             {% if target.id == bin.id %} bg-slate-800 text-slate-100
             {% else %} bg-slate-300 text-slate-400 {% endif %}">
                 <span class="group-hover:hidden">{{ bin.latest_litter_count }}</span>
