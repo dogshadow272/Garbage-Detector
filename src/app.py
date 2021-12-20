@@ -16,14 +16,9 @@ def index():
     return render_template('base.html', bins=db.fetch_bins(), target=None)
 
 
-@app.route('/b/<id>', methods=['POST', 'GET'])
+@app.route('/b/<id>', methods=['GET', 'POST', 'PUT'])
 def garbage_stats(id):
-    if request.method == 'POST':
-        # Handle `camera.py`'s POST request
-        print(request.form)
-
-        return ''
-    else:
+    if request.method == 'GET':
         # GET dashboard info for this bin
         litter_data = (db.get_time_stamps(id), db.get_litter_counts(id))
 
@@ -33,6 +28,16 @@ def garbage_stats(id):
                 break
 
         return render_template('garbage-stats.html', bins=db.fetch_bins(), target=target, litter_data=litter_data)
+    elif request.method == 'POST':
+        # Handle `camera.py`'s POST request
+        print(request.form)
+        return ''
+    else:
+        # Update address/location of bin
+        field, value = request.json['field'], f'"{request.json["value"]}"'
+        db.update_bin(id, field, value)
+
+        return ''
 
 
 @app.route('/newbin')

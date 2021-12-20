@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 
 {% block stats %}
-<div>
-    <h1 class="text-3xl font-bold">{{ target.address }}</h1>
-    <h2 class="text-xl font-semibold">{{ target.location }}</h2>
-</div>
+<input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent 
+    text-3xl font-bold rounded-md focus-visible:ring-2 focus-visible:ring-slate-300 
+    focus-visible:rounded focus-visible:outline-none px-2 py-1" value="{{target.address}}" placeholder="Address"
+    onfocusout="saveContent(this, 'address')" data-prev-value="{{target.address}}">
+<input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent 
+    text-xl font-semibold rounded-md focus-visible:ring-2 focus-visible:ring-slate-300
+    focus-visible:rounded focus-visible:outline-none px-2 py-1" value="{{target.location}}" placeholder="Location"
+    onfocusout="saveContent(this, 'location')" data-prev-value="{{target.location}}">
 
 <div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
     <div id="graph" class="flex flex-grow justify-center items-center"></div>
@@ -20,6 +24,20 @@
 </div>
 
 <script>
+    function saveContent(input, field) {
+        if (input.value === '') {
+            input.value = input.dataset.prevValue;
+        } else {
+            input.dataset.prevValue = input.value;
+            fetch('/b/{{target.id}}', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ field, value: input.value })
+            });
+        };
+
+    }
+
     // Ignore the linting errors - this is Jinja syntax
     const time_data = {{ litter_data[0] }};
     const litter_data = {{ litter_data[1] }};
