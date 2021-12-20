@@ -29,7 +29,7 @@ while True:
 
     img_name = f'{CAMERA_ID}-{int(time())}.png'
 
-    # `This is needed because s3.Bucket.upload_fileobj
+    # This is needed because s3.Bucket.upload_fileobj
     # requires a Fileobj that implements read
     img_obj = TemporaryFile()
     save(img_obj, cv2.imencode('.png', frame)[1])
