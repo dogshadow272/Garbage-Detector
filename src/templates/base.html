@@ -34,8 +34,8 @@
                 </button>
             </div>
             <div class="px-5 py-2 text-sm">
-                <div class="font-bold">{{ bin.address }}</div>
-                <div class="font-normal">{{ bin.location }}</div>
+                <div id="{{bin.id}}-address" class="font-bold">{{ bin.address }}</div>
+                <div id="{{bin.id}}-location" class="font-normal">{{ bin.location }}</div>
             </div>
         </a>
         {% endfor %}
