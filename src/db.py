@@ -37,7 +37,7 @@ from time import time
 from uuid import uuid4
 
 # `cd` into the src directory before running db.py or app.py
-con = sqlite3.connect('db.db', check_same_thread=False)
+con = sqlite3.connect('litter_data.db', check_same_thread=False)
 sql = con.cursor().execute
 
 ###   Internal helper-functions   ###
