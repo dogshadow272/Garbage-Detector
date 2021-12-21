@@ -50,8 +50,6 @@ def new_litter_items(id: str, time: int, litter_items: list):
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     for i in litter_items:
-        print(
-            f'INSERT INTO {table_name} VALUES ({i["confidence"]}, {i["width"]}, {i["height"]}, {i["left"]}, {i["top"]})')
         sql(
             f'INSERT INTO {table_name} VALUES ({i["confidence"]}, {i["width"]}, {i["height"]}, {i["left"]}, {i["top"]})'
         )
