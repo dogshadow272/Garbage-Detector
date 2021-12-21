@@ -16,7 +16,7 @@ def index():
     return render_template('base.html', bins=db.fetch_bins(), target=None)
 
 
-def request_litter_data(id: str) -> str:
+def get_dashboard_page(id: str) -> str:
     # Get litter counts and their corresponding timestamps
     litter_data = (db.get_time_stamps(id), db.get_litter_counts(id))
     bins = db.fetch_bins()
@@ -62,7 +62,7 @@ def update_bin_details(id: str):
 @app.route('/b/<id>', methods=['GET', 'POST', 'PUT'])
 def garbage_stats(id) -> str:
     if request.method == 'GET':
-        return request_litter_data(id)
+        return get_dashboard_page(id)
     elif request.method == 'POST':
         receive_camera_input(id)
     else:
