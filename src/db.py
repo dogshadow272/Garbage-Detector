@@ -40,12 +40,9 @@ def delete_bin(id: str):
     con.commit()
 
 
-def new_litter_count(id: str, time: int, litter_count: int):
-    sql(f'INSERT INTO bin{id} VALUES ({time}, {litter_count})')
-    con.commit()
+def new_litter_entry(id: str, time: int, litter_items: list):
+    sql(f'INSERT INTO bin{id} VALUES ({time}, {len(litter_items)})')
 
-
-def new_litter_items(id: str, time: int, litter_items: list):
     table_name = f'{id}_{time}'
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
