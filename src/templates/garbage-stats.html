@@ -42,9 +42,8 @@
 
     }
 
-    // Ignore the linting errors - this is Jinja syntax
-    const time_data = {{ litter_data[0] }};
-    const litter_data = {{ litter_data[1] }};
+    // const time_data = { litter_data[0] };
+    // const litter_data = { litter_data[1] };
     const data = time_data.map((e, i) => ({ date: e, litterCount: litter_data[i] }));
 </script>
 <script src="{{ url_for('static', filename='d3.v6.min.js') }}"></script>
