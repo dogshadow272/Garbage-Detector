@@ -69,7 +69,7 @@ while True:
         })
 
     # Send results to webserver
-    post(f'{WEB_SERVER}/b/{CAMERA_ID}', data=output)
+    post(f'{WEB_SERVER}/b/{CAMERA_ID}', json=output)
 
     # Capture images in one-minute intervals
     sleep(600)
