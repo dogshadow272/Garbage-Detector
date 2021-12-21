@@ -24,7 +24,9 @@
             flex items-center justify-center rounded-lg overflow-hidden
             {% if target.id == bin.id %} bg-slate-800 text-slate-100
             {% else %} bg-slate-300 text-slate-400 {% endif %}">
-                <span class="group-hover:hidden">{{ bin.latest_litter_count }}</span>
+                <span class="group-hover:hidden">
+                    {{'-' if bin.latest_litter_count is none else bin.latest_litter_count}}
+                </span>
                 <button onclick="deleteBin(event, '{{bin.id}}')" class="hidden group-hover:inline-block">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
