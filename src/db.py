@@ -40,13 +40,28 @@ def delete_bin(id: str):
     con.commit()
 
 
+def new_litter_count(id: str, time: int, litter_count: int):
+    sql(f'INSERT INTO bin{id} VALUES ({time}, {litter_count})')
+    con.commit()
+
+
+def new_litter_items(id: str, time: int, litter_items: list):
+    table_name = f'{id}_{time}'
+    sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
+
+    for i in litter_items:
+        print(
+            f'INSERT INTO {table_name} VALUES ({i["confidence"]}, {i["width"]}, {i["height"]}, {i["left"]}, {i["top"]})')
+        sql(
+            f'INSERT INTO {table_name} VALUES ({i["confidence"]}, {i["width"]}, {i["height"]}, {i["left"]}, {i["top"]})'
+        )
+
+    con.commit()
+
+
 def get_columns(table: str) -> list:
     '''Return a list of the columns in `table`.'''
     return [i[1] for i in sql(f'PRAGMA table_info({table})').fetchall()]
-
-
-def get_next_id():
-    return len(sql('SELECT id FROM info').fetchall()) + 1
 
 
 def get_litter_counts(id):

@@ -53,6 +53,7 @@ def receive_camera_input(id: str):
     res = request.json
 
     db.new_litter_count(id, res['timestamp'], res['litterCount'])
+    db.new_litter_items(id, res['timestamp'], res['litterItems'])
 
 
 def update_bin_details(id: str):
