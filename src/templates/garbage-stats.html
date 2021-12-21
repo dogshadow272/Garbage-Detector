@@ -32,7 +32,7 @@
             input.value = input.dataset.prevValue;
         } else {
             input.dataset.prevValue = input.value;
-            document.querySelector(`#{{target.id}}-${field}`).textContent = input.value;
+            document.querySelector(`#b-{{target.id}}-${field}`).textContent = input.value;
             fetch('/b/{{target.id}}', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
