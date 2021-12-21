@@ -112,9 +112,14 @@ def fetch_bins():
     # These keys are not stored in the database, so we update the dicts here
     for i in bins:
         i['cam_connected'] = time() < i['cam_expiry']
-        i['latest_litter_count'] = sql(
+        latest_litter_count = sql(
             f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC'
-        ).fetchone()[0]
+        ).fetchone()
+
+        if latest_litter_count is not None:
+            i['latest_litter_count'] = latest_litter_count[0]
+        else:
+            i['latest_litter_count'] = None
 
     return bins
 
