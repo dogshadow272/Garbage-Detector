@@ -36,6 +36,7 @@ def receive_camera_input(id: str):
     Request body shape:
     ```
     {
+        'timestamp': int,
         'litterCount': int,
         'litterItems': [
             {

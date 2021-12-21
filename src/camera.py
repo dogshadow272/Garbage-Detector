@@ -2,7 +2,7 @@ import cv2
 from tempfile import TemporaryFile
 from numpy import save
 from time import sleep, time
-import requests
+from requests import post
 import boto3
 
 
@@ -27,7 +27,8 @@ while True:
         print("Failed to grab frame")
         break
 
-    img_name = f'{CAMERA_ID}-{int(time())}.png'
+    timestamp = int(time())
+    img_name = f'{CAMERA_ID}-{timestamp}.png'
 
     # This is needed because s3.Bucket.upload_fileobj
     # requires a Fileobj that implements read
@@ -50,6 +51,7 @@ while True:
     )
 
     output = {
+        'timestamp': timestamp,
         'litterCount': len(response['CustomLabels']),
         'litterItems': []
     }
@@ -68,7 +70,7 @@ while True:
         })
 
     # Send results to webserver
-    requests.post(f'{WEB_SERVER}/b/{CAMERA_ID}', data=output)
+    post(f'{WEB_SERVER}/b/{CAMERA_ID}', data=output)
 
     # Capture images in one-minute intervals
     sleep(600)
