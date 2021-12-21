@@ -33,12 +33,16 @@ a litter item, on a scale of 0 to 100.
 '''
 
 import sqlite3
+import boto3
 from time import time
 from uuid import uuid4
 
 # `cd` into the src directory before running db.py or app.py
 con = sqlite3.connect('litter_data.db', check_same_thread=False)
 sql = con.cursor().execute
+
+s3 = boto3.resource('s3')
+
 
 ###   Internal helper-functions   ###
 
@@ -130,11 +134,16 @@ def get_full_bin(id: str):
     # Include extra info
     bin['captures'] = []
 
-    for (time, litter_count) in sql(f'SELECT * FROM bin_{id}').fetchall():
+    for (timestamp, litter_count) in sql(f'SELECT * FROM bin_{id}').fetchall():
+        img_name = f'{id}/{timestamp}.png'
+        # s3.meta.client.download_file(
+        #     'images-1553', img_name, f'static/bins/{img_name}.png'
+        # )
         bin['captures'].append({
-            'timestamp': time,
+            'timestamp': timestamp,
             'litter_count': litter_count,
-            'bounding_boxes': _to_dicts(f'bin_{id}_{time}')
+            'bounding_boxes': _to_dicts(f'bin_{id}_{timestamp}'),
+            'img_name': f'bins/{img_name}.png'
         })
 
     return bin
