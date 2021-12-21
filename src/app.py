@@ -37,7 +37,6 @@ def receive_camera_input(id: str):
     ```
     {
         'timestamp': int,
-        'litterCount': int,
         'litterItems': [
             {
                 'confidence': float,

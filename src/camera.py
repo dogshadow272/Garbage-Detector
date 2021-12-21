@@ -52,7 +52,6 @@ while True:
 
     output = {
         'timestamp': timestamp,
-        'litterCount': len(response['CustomLabels']),
         'litterItems': []
     }
 
