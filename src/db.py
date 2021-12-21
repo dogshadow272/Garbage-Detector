@@ -2,12 +2,45 @@ import sqlite3
 from time import time
 from uuid import uuid4
 
+# `cd` into the src directory before running db.py or app.py
 con = sqlite3.connect('db.db', check_same_thread=False)
 sql = con.cursor().execute
 
+###   Internal helper-functions   ###
 
-def cam_expiries():
-    return [i[0] for i in sql('SELECT cam_expiry FROM info')]
+
+def _get_col_names(table_name: str) -> 'list[str]':
+    '''Return the column names of the table `table_name`.'''
+    return [i[1] for i in sql(f'PRAGMA table_info({table_name})').fetchall()]
+
+
+def _to_dict(table_name: str, predicate: str) -> dict:
+    '''
+    Find the row in the SQL table `table_name` that matches the predicate, then
+    convert that row to a dictionary, with the keys being the table's column names.
+    '''
+    keys = _get_col_names(table_name)
+    values = sql(f'SELECT * FROM {table_name} WHERE {predicate}').fetchone()
+    return {
+        k: v for k, v in zip(keys, values)
+    }
+
+
+def _to_dicts(table_name: str) -> 'list[dict]':
+    '''
+    Convert a SQL table to a list of dictionaries,
+    with each dictionary being a row of the table.
+    '''
+    keys = _get_col_names(table_name)
+    return [
+        {
+            k: v for k, v in zip(keys, row)
+        }
+        for row in sql(f'SELECT * FROM {table_name}').fetchall()
+    ]
+
+
+###   Public interfaces   ###
 
 
 def create_bin(
@@ -18,10 +51,8 @@ def create_bin(
     '''Add a new bin to the database.'''
     # Generate unique id
     id = str(uuid4())[:6]
-
     sql(f'INSERT INTO info VALUES ("{id}", "{img_path}", "{address}", "{location}", {cam_expiry})')
     sql(f'CREATE TABLE bin{id} (time, litter_count)')
-    sql(f'INSERT INTO bin{id} VALUES (0, 0)')
     con.commit()
 
     return id
@@ -36,14 +67,19 @@ def update_bin(id: str, property: str, value):
 def delete_bin(id: str):
     '''Deletes bin with `id` from database'''
     sql(f'DELETE FROM info WHERE id="{id}"')
+
+    for (time,) in sql(f'SELECT time FROM bin{id}').fetchall():
+        sql(f'DROP TABLE {id}_{time}')
+
     sql(f'DROP TABLE bin{id}')
     con.commit()
 
 
 def new_litter_entry(id: str, time: int, litter_items: list):
-    sql(f'INSERT INTO bin{id} VALUES ({time}, {len(litter_items)})')
+    '''Create a new entry for litter data.'''
 
     table_name = f'{id}_{time}'
+    sql(f'INSERT INTO bin{id} VALUES ({time}, {len(litter_items)})')
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     for i in litter_items:
@@ -54,31 +90,24 @@ def new_litter_entry(id: str, time: int, litter_items: list):
     con.commit()
 
 
-def get_columns(table: str) -> list:
-    '''Return a list of the columns in `table`.'''
-    return [i[1] for i in sql(f'PRAGMA table_info({table})').fetchall()]
+def get_full_bin(id: str):
+    bin = _to_dict('info', f'id="{id}"')
 
+    # Include extra info
+    bin['captures'] = []
 
-def get_litter_counts(id):
-    return [i[0] for i in sql(f'SELECT litter_count FROM bin{id}').fetchall()]
+    for (time, litter_count) in sql(f'SELECT * FROM bin{id}').fetchall():
+        bin['captures'].append({
+            'timestamp': time,
+            'litterCount': litter_count,
+            'boundingBoxes': _to_dicts(f'{id}_{time}')
+        })
 
-
-def get_property(id: str, property: str):
-    '''Return the value of `property` on the bin with whose id is `id`.'''
-    return sql(f'SELECT {property} FROM info WHERE id="{id}"').fetchone()[0]
-
-
-def get_time_stamps(id):
-    return [i[0] for i in sql(f'SELECT time FROM bin{id}').fetchall()]
+    return bin
 
 
 def fetch_bins():
-    bins = [
-        {
-            prop: get_property(i, prop) for prop in get_columns('info')
-        }
-        for (i,) in sql('SELECT id FROM info').fetchall()
-    ]
+    bins = _to_dicts('info')
 
     # These keys are not stored in the database, so we update the dicts here
     for i in bins:
@@ -91,4 +120,4 @@ def fetch_bins():
 
 
 if __name__ == '__main__':
-    print(cam_expiries())
+    delete_bin('e21217')

@@ -17,17 +17,7 @@ def index():
 
 
 def get_dashboard_page(id: str) -> str:
-    # Get litter counts and their corresponding timestamps
-    litter_data = (db.get_time_stamps(id), db.get_litter_counts(id))
-    bins = db.fetch_bins()
-
-    # Find the target bin
-    for i in bins:
-        if i['id'] == id:
-            target = i
-            break
-
-    return render_template('garbage-stats.html', bins=bins, target=target, litter_data=litter_data)
+    return render_template('garbage-stats.html', bins=db.fetch_bins(), target=db.get_full_bin(id))
 
 
 def receive_camera_input(id: str):
