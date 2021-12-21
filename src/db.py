@@ -1,14 +1,13 @@
 '''`db.py` manages the SQL database stored in `db.db`, 
 which consists of three types of tables.
 
-The first type is the main table, called `info`, which contains general 
+The first type is the main table, called `bins`, which contains general 
 information about bins and cameras. Its columns are as follows:
 
 1. `id`: UID of a bin or camera.
-2. `img_path`: File path of the bin's image.
-3. `address`: Address at which the bin is located.
-4. `location`: Specific place at which the bin is located.
-5. `cam_expiry`: Unix timestamp at which the bin's camera will be 
+2. `address`: Address at which the bin is located.
+3. `location`: Specific place at which the bin is located.
+4. `cam_expiry`: Unix timestamp at which the bin's camera will be 
 considered disconnected. This timestamp is renewed every time the bin's 
 camera sends a POST request to the webserver.
 
@@ -79,15 +78,14 @@ def _to_dicts(table_name: str) -> 'list[dict]':
 
 
 def create_bin(
-        img_path: str = 'bins/0.jpg',
         address: str = '209 Bishan Street 23',
         location: str = 'Staircase 5A',
         cam_expiry: int = 0) -> str:
     '''Add a new bin to the database.'''
     # Generate unique id
     id = str(uuid4())[:6]
-    sql(f'INSERT INTO info VALUES ("{id}", "{img_path}", "{address}", "{location}", {cam_expiry})')
-    sql(f'CREATE TABLE bin{id} (time, litter_count)')
+    sql(f'INSERT INTO bins VALUES ("{id}", "{address}", "{location}", {cam_expiry})')
+    sql(f'CREATE TABLE bin_{id} (timestamp, litter_count)')
     con.commit()
 
     return id
@@ -95,26 +93,26 @@ def create_bin(
 
 def update_bin(id: str, property: str, value):
     '''Set `property` of bin #`id` to `value`.'''
-    sql(f'UPDATE info SET {property}={value} WHERE id="{id}"')
+    sql(f'UPDATE bins SET {property}={value} WHERE id="{id}"')
     con.commit()
 
 
 def delete_bin(id: str):
     '''Delete bin #`id` from database.'''
-    sql(f'DELETE FROM info WHERE id="{id}"')
+    sql(f'DELETE FROM bins WHERE id="{id}"')
 
-    for (time,) in sql(f'SELECT time FROM bin{id}').fetchall():
-        sql(f'DROP TABLE {id}_{time}')
+    for (timestamp,) in sql(f'SELECT timestamp FROM bin_{id}').fetchall():
+        sql(f'DROP TABLE bin_{id}_{timestamp}')
 
-    sql(f'DROP TABLE bin{id}')
+    sql(f'DROP TABLE bin_{id}')
     con.commit()
 
 
 def new_litter_entry(id: str, timestamp: int, litter_items: list):
     '''Create a new entry for litter data.'''
 
-    table_name = f'{id}_{timestamp}'
-    sql(f'INSERT INTO bin{id} VALUES ({timestamp}, {len(litter_items)})')
+    table_name = f'bin_{id}_{timestamp}'
+    sql(f'INSERT INTO bin_{id} VALUES ({timestamp}, {len(litter_items)})')
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     for i in litter_items:
@@ -127,16 +125,16 @@ def new_litter_entry(id: str, timestamp: int, litter_items: list):
 
 def get_full_bin(id: str):
     '''Return a detailed dict of bin #`id`.'''
-    bin = _to_dict('info', f'id="{id}"')
+    bin = _to_dict('bins', f'id="{id}"')
 
     # Include extra info
     bin['captures'] = []
 
-    for (time, litter_count) in sql(f'SELECT * FROM bin{id}').fetchall():
+    for (time, litter_count) in sql(f'SELECT * FROM bin_{id}').fetchall():
         bin['captures'].append({
             'timestamp': time,
-            'litterCount': litter_count,
-            'boundingBoxes': _to_dicts(f'{id}_{time}')
+            'litter_count': litter_count,
+            'bounding_boxes': _to_dicts(f'bin_{id}_{time}')
         })
 
     return bin
@@ -144,13 +142,13 @@ def get_full_bin(id: str):
 
 def fetch_bins() -> 'list[dict]':
     '''Return a dict of each bin.'''
-    bins = _to_dicts('info')
+    bins = _to_dicts('bins')
 
     # These keys are not stored in the database, so we update the dicts here
     for i in bins:
         i['cam_connected'] = time() < i['cam_expiry']
         latest_litter_count = sql(
-            f'SELECT litter_count FROM bin{i["id"]} ORDER BY time DESC'
+            f'SELECT litter_count FROM bin_{i["id"]} ORDER BY timestamp DESC'
         ).fetchone()
 
         if latest_litter_count is not None:
@@ -162,4 +160,4 @@ def fetch_bins() -> 'list[dict]':
 
 
 if __name__ == '__main__':
-    delete_bin('e21217')
+    pass
