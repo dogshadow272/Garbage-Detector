@@ -24,11 +24,11 @@ while True:
     ret, frame = cam.read()
 
     if not ret:
-        print("Failed to grab frame")
+        print('Failed to grab frame')
         break
 
     timestamp = int(time())
-    img_name = f'{CAMERA_ID}-{timestamp}.png'
+    img_name = f'{CAMERA_ID}/{timestamp}.png'
 
     # This is needed because s3.Bucket.upload_fileobj
     # requires a Fileobj that implements read
