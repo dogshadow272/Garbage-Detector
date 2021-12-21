@@ -61,7 +61,6 @@ while True:
         bb = item['Geometry']['BoundingBox']
 
         output['litterItems'].append({
-            'label': item['Name'],
             'confidence': item['Confidence'],
             'width': bb['Width'],
             'height': bb['Height'],
