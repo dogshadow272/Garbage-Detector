@@ -1,3 +1,38 @@
+'''`db.py` manages the SQL database stored in `db.db`, 
+which consists of three types of tables.
+
+The first type is the main table, called `info`, which contains general 
+information about bins and cameras. Its columns are as follows:
+
+1. `id`: UID of a bin or camera.
+2. `img_path`: File path of the bin's image.
+3. `address`: Address at which the bin is located.
+4. `location`: Specific place at which the bin is located.
+5. `cam_expiry`: Unix timestamp at which the bin's camera will be 
+considered disconnected. This timestamp is renewed every time the bin's 
+camera sends a POST request to the webserver.
+
+The second type of tables contain basic information about a camera's image
+captures. It follows the naming convention `bin_<id>`, where `<id>` is the
+UID of the bin. Its columns are as follows:
+
+1. `timestamp`: Unix timestamp at which an image was captured.
+2. `litter_count`: Number of litter items detected in the image.
+
+The third type of tables contain detailed information about the contents
+of a captured image. It follows the naming convention `bin_<id>_<timestamp>`,
+where `<id>` is the UID of the bin, and `timestamp` is the Unix timestamp at
+which the image was captured. Each row in these tables represents a bounding 
+box around a litter item. Its columns are as follows:
+
+1. `confidence`: Rekognition's confidence that the bounding box contains
+a litter item, on a scale of 0 to 100.
+2. `width`: Width of the bounding box as a ratio of the overall image width.
+3. `height`: Height of the bounding box as a ratio of the overall image height.
+4. `left`: Left coordinate of the bounding box as a ratio of overall image width. 
+5. `top`: Top coordinate of the bounding box as a ratio of overall image height.
+'''
+
 import sqlite3
 from time import time
 from uuid import uuid4
@@ -65,7 +100,7 @@ def update_bin(id: str, property: str, value):
 
 
 def delete_bin(id: str):
-    '''Deletes bin with `id` from database'''
+    '''Delete bin #`id` from database.'''
     sql(f'DELETE FROM info WHERE id="{id}"')
 
     for (time,) in sql(f'SELECT time FROM bin{id}').fetchall():
@@ -75,11 +110,11 @@ def delete_bin(id: str):
     con.commit()
 
 
-def new_litter_entry(id: str, time: int, litter_items: list):
+def new_litter_entry(id: str, timestamp: int, litter_items: list):
     '''Create a new entry for litter data.'''
 
-    table_name = f'{id}_{time}'
-    sql(f'INSERT INTO bin{id} VALUES ({time}, {len(litter_items)})')
+    table_name = f'{id}_{timestamp}'
+    sql(f'INSERT INTO bin{id} VALUES ({timestamp}, {len(litter_items)})')
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     for i in litter_items:
@@ -91,6 +126,7 @@ def new_litter_entry(id: str, time: int, litter_items: list):
 
 
 def get_full_bin(id: str):
+    '''Return a detailed dict of bin #`id`.'''
     bin = _to_dict('info', f'id="{id}"')
 
     # Include extra info
@@ -106,7 +142,8 @@ def get_full_bin(id: str):
     return bin
 
 
-def fetch_bins():
+def fetch_bins() -> 'list[dict]':
+    '''Return a dict of each bin.'''
     bins = _to_dicts('info')
 
     # These keys are not stored in the database, so we update the dicts here
