@@ -1,14 +1,14 @@
-'''`db.py` manages the SQL database stored in `db.db`, 
+'''`db.py` manages the SQL database stored in `db.db`,
 which consists of three types of tables.
 
-The first type is the main table, called `bins`, which contains general 
+The first type is the main table, called `bins`, which contains general
 information about bins and cameras. Its columns are as follows:
 
 1. `id`: UID of a bin or camera.
 2. `address`: Address at which the bin is located.
 3. `location`: Specific place at which the bin is located.
-4. `cam_expiry`: Unix timestamp at which the bin's camera will be 
-considered disconnected. This timestamp is renewed every time the bin's 
+4. `cam_expiry`: Unix timestamp at which the bin's camera will be
+considered disconnected. This timestamp is renewed every time the bin's
 camera sends a POST request to the webserver.
 
 The second type of tables contain basic information about a camera's image
@@ -22,14 +22,14 @@ UID of the bin. Its columns are as follows:
 The third type of tables contain detailed information about the contents
 of a captured image. It follows the naming convention `bin_<id>_<timestamp>`,
 where `<id>` is the UID of the bin, and `timestamp` is the Unix timestamp at
-which the image was captured. Each row in these tables represents a bounding 
+which the image was captured. Each row in these tables represents a bounding
 box around a litter item. Its columns are as follows:
 
 1. `confidence`: Rekognition's confidence that the bounding box contains
 a litter item, on a scale of 0 to 100.
 2. `width`: Width of the bounding box as a ratio of the overall image width.
 3. `height`: Height of the bounding box as a ratio of the overall image height.
-4. `left`: Left coordinate of the bounding box as a ratio of overall image width. 
+4. `left`: Left coordinate of the bounding box as a ratio of overall image width.
 5. `top`: Top coordinate of the bounding box as a ratio of overall image height.
 '''
 
@@ -133,18 +133,25 @@ def get_full_bin(id: str):
     bin = _to_dict('bins', f'id="{id}"')
 
     # Include extra info
+    bin['cam_connected'] = time() < bin['cam_expiry']
+
+    latest_litter_count = sql(
+        f'SELECT litter_count FROM bin_{bin["id"]} ORDER BY timestamp DESC'
+    ).fetchone()
+
+    if latest_litter_count is not None:
+        bin['latest_litter_count'] = latest_litter_count[0]
+    else:
+        bin['latest_litter_count'] = None
+
     bin['captures'] = []
 
-    for (timestamp, litter_count) in sql(f'SELECT * FROM bin_{id}').fetchall():
-        img_name = f'{id}/{timestamp}.png'
-        # s3.meta.client.download_file(
-        #     'images-1553', img_name, f'static/bins/{img_name}.png'
-        # )
+    for (timestamp, litter_count, image) in sql(f'SELECT * FROM bin_{id}').fetchall():
         bin['captures'].append({
             'timestamp': timestamp,
             'litter_count': litter_count,
             'bounding_boxes': _to_dicts(f'bin_{id}_{timestamp}'),
-            'img_name': f'bins/{img_name}.png'
+            'image': image
         })
 
     return bin
@@ -170,4 +177,5 @@ def fetch_bins() -> 'list[dict]':
 
 
 if __name__ == '__main__':
-    pass
+    with open('img', 'w') as f:
+        f.write(_to_dict('bin_743003', 'timestamp=1640180962')['image'])
