@@ -4,7 +4,7 @@ from numpy import save
 from time import sleep, time
 from requests import post
 import boto3
-
+import os
 
 # Start camera
 cam = cv2.VideoCapture(0)
@@ -28,16 +28,17 @@ while True:
         break
 
     timestamp = int(time())
-    img_name = f'{CAMERA_ID}/{timestamp}.png'
+    img_name = f'{CAMERA_ID}-{timestamp}.png'
 
     # This is needed because s3.Bucket.upload_fileobj
     # requires a Fileobj that implements read
-    img_obj = TemporaryFile()
-    save(img_obj, cv2.imencode('.png', frame)[1])
+    img_name = f"{img_name}"
+    cv2.imwrite(img_name, frame)
 
     # Upload the image to S3
-    s3.Bucket(BUCKET_NAME).upload_fileobj(img_obj, img_name)
-
+    s3.Bucket(f'images-1553').upload_file(img_name, img_name)
+    #Get rid of local image
+    os.system(f'rm {img_name}')
     # Custom label detection
     response = client.detect_custom_labels(
         ProjectVersionArn='arn:aws:rekognition:us-east-1:338430903861:project/AWSAcceleratorProject/version/AWSAcceleratorProject.2021-12-18T13.23.11/1639804992696',
