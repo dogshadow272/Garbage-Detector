@@ -36,7 +36,7 @@ while True:
     )
 
     output = {
-        'image': f'data:image/png;base64,{b64encode(img)}',
+        'image': 'data:image/png;base64,' + str(b64encode(img))[2:-1],
         'timestamp': timestamp,
         'litterItems': []
     }
