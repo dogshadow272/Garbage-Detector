@@ -120,6 +120,9 @@ def new_litter_entry(id: str, timestamp: int, image: str, litter_items: list):
     sql(f'INSERT INTO bin_{id} VALUES ({timestamp}, {len(litter_items)}, "{image}")')
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
+    # Update expiry timestamp
+    update_bin(id, 'cam_expiry', timestamp + 610)
+
     for i in litter_items:
         sql(
             f'INSERT INTO {table_name} VALUES ({i["confidence"]}, {i["width"]}, {i["height"]}, {i["left"]}, {i["top"]})'
