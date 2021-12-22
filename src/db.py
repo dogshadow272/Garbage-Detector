@@ -17,6 +17,7 @@ UID of the bin. Its columns are as follows:
 
 1. `timestamp`: Unix timestamp at which an image was captured.
 2. `litter_count`: Number of litter items detected in the image.
+3. `image`: Data URI of the image.
 
 The third type of tables contain detailed information about the contents
 of a captured image. It follows the naming convention `bin_<id>_<timestamp>`,
@@ -89,7 +90,7 @@ def create_bin(
     # Generate unique id
     id = str(uuid4())[:6]
     sql(f'INSERT INTO bins VALUES ("{id}", "{address}", "{location}", {cam_expiry})')
-    sql(f'CREATE TABLE bin_{id} (timestamp, litter_count)')
+    sql(f'CREATE TABLE bin_{id} (timestamp, litter_count, image)')
     con.commit()
 
     return id
@@ -112,11 +113,11 @@ def delete_bin(id: str):
     con.commit()
 
 
-def new_litter_entry(id: str, timestamp: int, litter_items: list):
+def new_litter_entry(id: str, timestamp: int, image: str, litter_items: list):
     '''Create a new entry for litter data.'''
 
     table_name = f'bin_{id}_{timestamp}'
-    sql(f'INSERT INTO bin_{id} VALUES ({timestamp}, {len(litter_items)})')
+    sql(f'INSERT INTO bin_{id} VALUES ({timestamp}, {len(litter_items)}, "{image}")')
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     for i in litter_items:

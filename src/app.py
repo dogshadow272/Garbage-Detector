@@ -26,6 +26,7 @@ def receive_camera_input(id: str):
     Request body shape:
     ```
     {
+        'image': str,
         'timestamp': int,
         'litterItems': [
             {
@@ -40,7 +41,7 @@ def receive_camera_input(id: str):
     ```
     '''
     res = request.json
-    db.new_litter_entry(id, res['timestamp'], res['litterItems'])
+    db.new_litter_entry(id, res['timestamp'], res['image'], res['litterItems'])
 
 
 def update_bin_details(id: str):

@@ -1,57 +1,42 @@
 import cv2
-from tempfile import TemporaryFile
-from numpy import save
+import boto3
 from time import sleep, time
 from requests import post
-import boto3
-import os
+from base64 import b64encode
 
 # Start camera
 cam = cv2.VideoCapture(0)
 # Set this to the relevant camera ID
-CAMERA_ID = '123456'
+CAMERA_ID = '743003'
 
 # URL of the web server
 WEB_SERVER = 'http://localhost:5000'
 
-s3 = boto3.resource('s3')
-BUCKET_NAME = 'images-1553'
 client = boto3.client('rekognition', region_name='us-east-1')
 
 
 while True:
     # Take picture
     ret, frame = cam.read()
+    timestamp = int(time())
 
     if not ret:
         print('Failed to grab frame')
         break
 
-    timestamp = int(time())
-    img_name = f'{CAMERA_ID}-{timestamp}.png'
+    img = cv2.imencode('.png', frame)[1].tobytes()
 
-    # This is needed because s3.Bucket.upload_fileobj
-    # requires a Fileobj that implements read
-    img_name = f"{img_name}"
-    cv2.imwrite(img_name, frame)
-
-    # Upload the image to S3
-    s3.Bucket(f'images-1553').upload_file(img_name, img_name)
-    #Get rid of local image
-    os.system(f'rm {img_name}')
     # Custom label detection
     response = client.detect_custom_labels(
         ProjectVersionArn='arn:aws:rekognition:us-east-1:338430903861:project/AWSAcceleratorProject/version/AWSAcceleratorProject.2021-12-18T13.23.11/1639804992696',
         Image={
-            'S3Object': {
-                'Bucket': BUCKET_NAME,
-                'Name': img_name,
-            }
+            'Bytes': img,
         },
         # MinConfidence=70
     )
 
     output = {
+        'image': f'data:image/png;base64,{b64encode(img)}',
         'timestamp': timestamp,
         'litterItems': []
     }
