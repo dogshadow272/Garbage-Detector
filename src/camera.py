@@ -7,7 +7,7 @@ from base64 import b64encode
 # Start camera
 cam = cv2.VideoCapture(0)
 # Set this to the relevant camera ID
-CAMERA_ID = '743003'
+CAMERA_ID = '5ce12d'
 
 # URL of the web server
 WEB_SERVER = 'http://localhost:5000'
@@ -57,6 +57,6 @@ while True:
     post(f'{WEB_SERVER}/b/{CAMERA_ID}', json=output)
 
     # Capture images in one-minute intervals
-    sleep(600)
+    sleep(60)
 
 cam.release()
