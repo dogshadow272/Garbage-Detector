@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block stats %}
+
 <input type="text" class="block bg-transparent hover:bg-slate-200 focus:bg-transparent
     text-3xl font-bold rounded-md focus-visible:ring-2 focus-visible:ring-slate-300
     focus-visible:rounded focus-visible:outline-none px-2 py-1" value="{{target.address}}" placeholder="Address"
@@ -15,10 +16,10 @@
 
 <div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
     <div id="graph" class="flex flex-grow justify-center items-center"></div>
-    <div class="flex flex-col justify-center text-center w-[400px]
+    <div class="{% if not target.cam_connected %}flex flex-col justify-center text-center{% endif %} w-[400px]
     h-[300px] bg-slate-800 shadow rounded-xl overflow-hidden">
         {% if target.cam_connected %}
-        <img id="photo" src="{{ url_for('static', filename=target.img_path) }}"
+        <img id="photo" class="object-cover h-full" src="{{target.captures[-1].image}}"
             alt="Garbage bin at {{ target.address }}, {{ target.location }}">
         {% else %}
         <div class="text-slate-50 text-xl font-bold">No camera connected</div>
