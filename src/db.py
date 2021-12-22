@@ -121,7 +121,7 @@ def new_litter_entry(id: str, timestamp: int, image: str, litter_items: list):
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     # Update expiry timestamp
-    update_bin(id, 'cam_expiry', timestamp + 610)
+    update_bin(id, 'cam_expiry', timestamp + 70)
 
     for i in litter_items:
         sql(
