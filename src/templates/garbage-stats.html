@@ -14,10 +14,10 @@
     onfocusout="saveContent(this, 'location')" data-prev-value="{{target.location}}"
     onkeyup="if (event.keyCode == 13) this.blur();">
 
-<div class="flex justify-center items-center flex-wrap gap-x-6 gap-y-10 w-auto mt-16">
-    <div id="graph" class="flex flex-grow justify-center items-center"></div>
+<div class="flex flex-col items-center w-auto mt-10">
+    <canvas id="chart" width="400" height="100"></canvas>
     <div class="{% if not target.cam_connected %}flex flex-col justify-center text-center{% endif %} w-[400px]
-    h-[300px] bg-slate-800 shadow rounded-xl overflow-hidden">
+    h-[300px] mt-10 bg-slate-800 shadow rounded-xl overflow-hidden">
         {% if target.cam_connected %}
         <img id="photo" class="object-cover h-full" src="{{target.captures[-1].image}}"
             alt="Garbage bin at {{ target.address }}, {{ target.location }}">
@@ -26,6 +26,7 @@
         {% endif %}
     </div>
 </div>
+
 
 <script>
     function saveContent(input, field) {
@@ -43,10 +44,9 @@
 
     }
 
-    // const time_data = { litter_data[0] };
-    // const litter_data = { litter_data[1] };
-    const data = time_data.map((e, i) => ({ date: e, litterCount: litter_data[i] }));
+    const bin_captures = JSON.parse('{{ target|tojson }}').captures;
+    const data = bin_captures.map((e, _) => ({ x: e.timestamp.toString(), y: e.litter_count }));
 </script>
-<script src="{{ url_for('static', filename='d3.v6.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src="{{ url_for('static', filename='garbage-stats.js') }}"></script>
 {% endblock %}
