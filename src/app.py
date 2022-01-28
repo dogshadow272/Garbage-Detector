@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect
-import boto3
 import db
 import time
 
@@ -7,8 +6,6 @@ import time
 DELAY = 70
 
 app = Flask(__name__)
-s3 = boto3.resource('s3')
-bucket_name = 'custom-labels-console-us-east-1-bdd057d599'
 
 
 @app.route('/')
