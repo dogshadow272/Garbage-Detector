@@ -14,8 +14,8 @@
     onfocusout="saveContent(this, 'location')" data-prev-value="{{target.location}}"
     onkeyup="if (event.keyCode == 13) this.blur();">
 
-<div class="flex flex-col items-center w-auto mt-10">
-    <canvas id="chart" width="400" height="100"></canvas>
+<div class="flex items-center w-auto mt-10">
+    <div id="graph"></div>
     <div class="{% if not target.cam_connected %}flex flex-col justify-center text-center{% endif %} w-[400px]
     h-[300px] mt-10 bg-slate-800 shadow rounded-xl overflow-hidden">
         {% if target.cam_connected %}
@@ -27,7 +27,7 @@
     </div>
 </div>
 
-
+<script src="{{ url_for('static', filename='d3.v6.min.js') }}"></script>
 <script>
     function saveContent(input, field) {
         if (input.value === '') {
@@ -43,10 +43,9 @@
         };
 
     }
-
+    let dateFmt = d3.timeParse("%s");
     const bin_captures = JSON.parse('{{ target|tojson }}').captures;
-    const data = bin_captures.map((e, _) => ({ x: e.timestamp.toString(), y: e.litter_count }));
+    const data = bin_captures.map((e, _) => ({ date: dateFmt(`${e.timestamp}`), litterCount: e.litter_count }));
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src="{{ url_for('static', filename='garbage-stats.js') }}"></script>
 {% endblock %}
