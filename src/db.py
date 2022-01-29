@@ -34,15 +34,12 @@ a litter item, on a scale of 0 to 100.
 '''
 
 import sqlite3
-import boto3
 from time import time
 from uuid import uuid4
 
 # `cd` into the src directory before running db.py or app.py
 con = sqlite3.connect('litter_data.db', check_same_thread=False)
 sql = con.cursor().execute
-
-s3 = boto3.resource('s3')
 
 
 ###   Internal helper-functions   ###
@@ -177,8 +174,3 @@ def fetch_bins() -> 'list[dict]':
             i['latest_litter_count'] = None
 
     return bins
-
-
-if __name__ == '__main__':
-    with open('img', 'w') as f:
-        f.write(_to_dict('bin_743003', 'timestamp=1640180962')['image'])
