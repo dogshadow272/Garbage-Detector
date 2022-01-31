@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect
+from config import LITTER_NOTIFICATION_THRESHOLD
 import db
+import sns
 
-
-DELAY = 70
 
 app = Flask(__name__)
 
@@ -37,6 +37,17 @@ def receive_camera_input(id: str):
     ```
     '''
     res = request.json
+    bin = db.get_full_bin(id)
+    curr_litter_count = len(res['litterItems'])
+    prev_litter_count = bin['latest_litter_count'] or 0
+
+    # Send SMS notification if litter crosses threshold
+    if prev_litter_count < LITTER_NOTIFICATION_THRESHOLD <= curr_litter_count:
+        sns.send_message(
+            f'There are {curr_litter_count} litter items around the bin at {bin["address"]}, {bin["location"]}.'
+        )
+
+    # Save litter data
     db.new_litter_entry(id, res['timestamp'], res['image'], res['litterItems'])
 
 
