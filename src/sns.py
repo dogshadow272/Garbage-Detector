@@ -1,10 +1,11 @@
 import boto3
+from config import SNS_ARN
 
 client = boto3.client('sns', region_name='us-east-1')
 
 
 def send_message(message):
     client.publish(
-        TopicArn='arn:aws:sns:us-east-1:126728685550:garbage-detect',
+        TopicArn=SNS_ARN,
         Message=message
     )

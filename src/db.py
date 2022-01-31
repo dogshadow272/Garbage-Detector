@@ -36,6 +36,7 @@ a litter item, on a scale of 0 to 100.
 import sqlite3
 from time import time
 from uuid import uuid4
+from config import TIME_TO_CAMERA_EXPIRY
 
 # `cd` into the src directory before running db.py or app.py
 con = sqlite3.connect('litter_data.db', check_same_thread=False)
@@ -83,7 +84,7 @@ def create_bin(
         address: str = '209 Bishan Street 23',
         location: str = 'Staircase 5A',
         cam_expiry: int = 0) -> str:
-    '''Add a new bin to the database.'''
+    '''Add a new bin to the database and return the bin's id.'''
     # Generate unique id
     id = str(uuid4())[:6]
     sql(f'INSERT INTO bins VALUES ("{id}", "{address}", "{location}", {cam_expiry})')
@@ -118,7 +119,7 @@ def new_litter_entry(id: str, timestamp: int, image: str, litter_items: list):
     sql(f'CREATE TABLE {table_name} (confidence, width, height, left, top)')
 
     # Update expiry timestamp
-    update_bin(id, 'cam_expiry', timestamp + 70)
+    update_bin(id, 'cam_expiry', timestamp + TIME_TO_CAMERA_EXPIRY)
 
     for i in litter_items:
         sql(

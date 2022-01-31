@@ -3,14 +3,12 @@ import boto3
 from time import sleep, time
 from requests import post
 from base64 import b64encode
+from config import REKOGNITION_ARN, WEB_SERVER, CAMERA_INTERVAL
 
 # Start camera
 cam = cv2.VideoCapture(0)
 # Set this to the relevant camera ID
 CAMERA_ID = '5ce12d'
-
-# URL of the web server
-WEB_SERVER = 'http://127.0.0.1:5000'
 
 client = boto3.client('rekognition', region_name='us-east-1')
 
@@ -28,7 +26,7 @@ try:
 
         # Custom label detection
         response = client.detect_custom_labels(
-            ProjectVersionArn='arn:aws:rekognition:us-east-1:126728685550:project/Garbage-Detect-v1/version/Garbage-Detect-v1.2022-01-28T11.33.27/1643340807701',
+            ProjectVersionArn=REKOGNITION_ARN,
             Image={
                 'Bytes': img,
             },
@@ -56,7 +54,7 @@ try:
         # Send results to webserver
         post(f'{WEB_SERVER}/b/{CAMERA_ID}', json=output)
 
-        # Capture images in one-minute intervals
-        sleep(60)
+        # Wait for some time between image captures
+        sleep(CAMERA_INTERVAL)
 finally:
     cam.release()
